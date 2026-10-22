@@ -1,0 +1,226 @@
+[
+  {
+    "id": "notif-001",
+    "source": "Slack",
+    "sender": "sarah.chen (Engineering Lead)",
+    "timestamp": "2026-10-23T08:15:00Z",
+    "title": "URGENT: Production Auth Gateway Latency Spike",
+    "body": "Hey team, auth gateway p99 latency spiked past 1400ms in us-east-1. We need a rollback or DB connection pool increase before the 10:00 AM customer webinar. Who can jump on this right now?"
+  },
+  {
+    "id": "notif-002",
+    "source": "Slack",
+    "sender": "sarah.chen (Engineering Lead)",
+    "timestamp": "2026-10-23T08:22:00Z",
+    "title": "URGENT reminder: Auth Gateway Latency",
+    "body": "Following up on my message earlier: auth gateway latency is still climbing. @channel please check DB pool connections before 10:00 AM."
+  },
+  {
+    "id": "notif-003",
+    "source": "PagerDuty",
+    "sender": "AlertBot",
+    "timestamp": "2026-10-23T08:18:00Z",
+    "title": "[Triggered] Auth-Service-US-East-P99-High",
+    "body": "Incident #4492: Auth Service latency exceeds SLO threshold (1450ms > 250ms). Impact: 8% of login requests delayed."
+  },
+  {
+    "id": "notif-004",
+    "source": "PagerDuty",
+    "sender": "AlertBot",
+    "timestamp": "2026-10-23T08:24:00Z",
+    "title": "[Triggered] Auth-Service-US-East-P99-High (Escalated)",
+    "body": "Incident #4492 escalated to Tier-2 SRE on-call. Condition active for 10 minutes."
+  },
+  {
+    "id": "notif-005",
+    "source": "GitHub",
+    "sender": "security-bot",
+    "timestamp": "2026-10-23T08:30:00Z",
+    "title": "[Security Advisory] Critical vuln in pyjwt < 2.9.0",
+    "body": "High severity CVE-2026-3829 detected in auth service requirements.txt. Fix available in version 2.9.1. Requires dependency bump and verification."
+  },
+  {
+    "id": "notif-006",
+    "source": "GitHub",
+    "sender": "dependabot[bot]",
+    "timestamp": "2026-10-23T08:31:00Z",
+    "title": "Bump pyjwt from 2.8.0 to 2.9.1 in /backend",
+    "body": "Bumps pyjwt from 2.8.0 to 2.9.1. Resolves security vulnerability CVE-2026-3829. CI checks pending."
+  },
+  {
+    "id": "notif-007",
+    "source": "Slack",
+    "sender": "alex.m (Product Manager)",
+    "timestamp": "2026-10-23T08:35:00Z",
+    "title": "Q4 Roadmap Slides Review",
+    "body": "Hi all! When you get a chance today or tomorrow, please take a quick look at the draft Q4 roadmap slide deck and leave comments."
+  },
+  {
+    "id": "notif-008",
+    "source": "Email",
+    "sender": "Alex Miller <alex.m@company.com>",
+    "timestamp": "2026-10-23T08:36:00Z",
+    "title": "Draft Q4 Roadmap Slides for review",
+    "body": "Team, attaching the Google Slides link for Q4 roadmap. No rush, review by end of week if possible."
+  },
+  {
+    "id": "notif-009",
+    "source": "Google Calendar",
+    "sender": "calendar-notification@google.com",
+    "timestamp": "2026-10-23T08:45:00Z",
+    "title": "Reminder: All Hands in 15 minutes",
+    "body": "Weekly All-Hands meeting starting at 9:00 AM IST. Room: Virtual Zoom link attached."
+  },
+  {
+    "id": "notif-010",
+    "source": "Google Calendar",
+    "sender": "calendar-notification@google.com",
+    "timestamp": "2026-10-23T08:50:00Z",
+    "title": "Reminder: All Hands in 10 minutes",
+    "body": "Weekly All-Hands meeting starting at 9:00 AM IST. Room: Virtual Zoom link attached."
+  },
+  {
+    "id": "notif-011",
+    "source": "Slack",
+    "sender": "hr-announcements",
+    "timestamp": "2026-10-23T08:55:00Z",
+    "title": "All Hands starting now!",
+    "body": "All Hands is live in Zoom room 4. Please join with microphones muted."
+  },
+  {
+    "id": "notif-012",
+    "source": "Linear",
+    "sender": "jordan.k (Staff Architect)",
+    "timestamp": "2026-10-23T09:05:00Z",
+    "title": "ENG-1082: Sign off on API Schema Migration before Deployment",
+    "body": "Ganesh, we cannot deploy the v2 user profiles schema without your sign-off on the backwards-compatibility test. Hard cutoff is 2:00 PM today."
+  },
+  {
+    "id": "notif-013",
+    "source": "Email",
+    "sender": "Jordan Kelly <jordan.k@company.com>",
+    "timestamp": "2026-10-23T09:07:00Z",
+    "title": "FWD: ENG-1082 Schema Migration Approval Needed",
+    "body": "Sent this on Linear as well: need your explicit sign-off on the user profile schema migration before 2:00 PM so DevOps can schedule the migration window."
+  },
+  {
+    "id": "notif-014",
+    "source": "Jira",
+    "sender": "jira-notifications@company.com",
+    "timestamp": "2026-10-23T09:12:00Z",
+    "title": "PROD-502 updated: Documentation for Redis Cache Key Expiry",
+    "body": "Status changed from To Do to In Progress. Assignee: David. Priority: Low."
+  },
+  {
+    "id": "notif-015",
+    "source": "Jira",
+    "sender": "jira-notifications@company.com",
+    "timestamp": "2026-10-23T09:15:00Z",
+    "title": "PROD-502 comment added by David",
+    "body": "Updated the Confluence page with TTL recommendations. No action required."
+  },
+  {
+    "id": "notif-016",
+    "source": "Slack",
+    "sender": "office-facilities",
+    "timestamp": "2026-10-23T09:20:00Z",
+    "title": "Cafeteria Lunch Menu for Today",
+    "body": "Today's special: Mediterranean bowls and vegetable curry. Available from 12:30 PM."
+  },
+  {
+    "id": "notif-017",
+    "source": "Email",
+    "sender": "Weekly Tech Newsletter <digest@techweekly.dev>",
+    "timestamp": "2026-10-23T09:22:00Z",
+    "title": "Top 10 Open-Source AI Trends in October 2026",
+    "body": "Read about Gemma 2, on-device SLMs, edge agents, and Hacktoberfest highlights."
+  },
+  {
+    "id": "notif-018",
+    "source": "Slack",
+    "sender": "david.r (Backend Eng)",
+    "timestamp": "2026-10-23T09:25:00Z",
+    "title": "Quick question on PR #792 tests",
+    "body": "Hey Ganesh, did you see the test suite updates on the booth deletion endpoint? Looking really clean, nice job on the idempotency handling."
+  },
+  {
+    "id": "notif-019",
+    "source": "GitHub",
+    "sender": "github-actions[bot]",
+    "timestamp": "2026-10-23T09:28:00Z",
+    "title": "Workflow run succeeded: CI Tests for PR #792",
+    "body": "Run #149 finished: 11 tests passed in 6.85s. All checks green."
+  },
+  {
+    "id": "notif-020",
+    "source": "GitHub",
+    "sender": "github-actions[bot]",
+    "timestamp": "2026-10-23T09:30:00Z",
+    "title": "Workflow run succeeded: Lint and Formatting for PR #792",
+    "body": "Ruff format check passed. 0 violations found."
+  },
+  {
+    "id": "notif-021",
+    "source": "Slack",
+    "sender": "finance-ops",
+    "timestamp": "2026-10-23T09:35:00Z",
+    "title": "Monthly Expense Reports Reminder",
+    "body": "Reminder: All travel and software subscription expense reimbursements for October are due by October 31."
+  },
+  {
+    "id": "notif-022",
+    "source": "Email",
+    "sender": "Finance Department <expenses@company.com>",
+    "timestamp": "2026-10-23T09:36:00Z",
+    "title": "Expense submissions deadline: October 31",
+    "body": "Please submit any pending receipts into Expensify before midnight on October 31 to ensure timely reimbursement."
+  },
+  {
+    "id": "notif-023",
+    "source": "Slack",
+    "sender": "cloud-billing-alerts",
+    "timestamp": "2026-10-23T09:40:00Z",
+    "title": "AWS Daily Spend Notification",
+    "body": "Daily spend for October 22 was $142.10 (within expected baseline of $150.00)."
+  },
+  {
+    "id": "notif-024",
+    "source": "Slack",
+    "sender": "random-chatter",
+    "timestamp": "2026-10-23T09:42:00Z",
+    "title": "Anyone up for coffee at 11?",
+    "body": "Heading down to the 2nd floor espresso machine around 11 if anyone wants to grab a cup!"
+  },
+  {
+    "id": "notif-025",
+    "source": "GitHub",
+    "sender": "stale-bot",
+    "timestamp": "2026-10-23T09:45:00Z",
+    "title": "Issue #319 marked as stale",
+    "body": "This issue has had no activity in 45 days. It will be closed in 7 days if no update is provided."
+  },
+  {
+    "id": "notif-026",
+    "source": "Slack",
+    "sender": "sarah.chen (Engineering Lead)",
+    "timestamp": "2026-10-23T09:50:00Z",
+    "title": "Auth incident update: Mitigated",
+    "body": "Quick update: SRE scaled DB pool min connections from 10 to 40. P99 latency dropped back down to 180ms. Root cause postmortem meeting tomorrow."
+  },
+  {
+    "id": "notif-027",
+    "source": "PagerDuty",
+    "sender": "AlertBot",
+    "timestamp": "2026-10-23T09:51:00Z",
+    "title": "[Resolved] Auth-Service-US-East-P99-High",
+    "body": "Incident #4492 has been resolved by Sarah Chen. Alert duration: 33 minutes."
+  },
+  {
+    "id": "notif-028",
+    "source": "Slack",
+    "sender": "jordan.k (Staff Architect)",
+    "timestamp": "2026-10-23T09:55:00Z",
+    "title": "Ping on ENG-1082 schema sign-off",
+    "body": "Hey Ganesh, checking in on the schema sign-off. Please let me know once you've reviewed the test script!"
+  }
+]

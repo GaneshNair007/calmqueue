@@ -1,0 +1,282 @@
+[
+  {
+    "id": "gh-001",
+    "source": "GitHub",
+    "sender": "contributor-42",
+    "timestamp": "2026-10-23T01:00:00Z",
+    "title": "Issue #810: Memory leak in WebSocket connection pool",
+    "body": "When clients disconnect abruptly without FIN handshake, connection object remains in _active_sockets dict. Reproducible in production with 10k connections."
+  },
+  {
+    "id": "gh-002",
+    "source": "GitHub",
+    "sender": "contributor-42",
+    "timestamp": "2026-10-23T01:05:00Z",
+    "title": "PR #812: Fix memory leak in WebSocket connection pool",
+    "body": "Fixes #810. Added weakref callback and explicit cleanup on transport close. Added regression test verifying garbage collection."
+  },
+  {
+    "id": "gh-003",
+    "source": "GitHub",
+    "sender": "coderabbitai[bot]",
+    "timestamp": "2026-10-23T01:08:00Z",
+    "title": "CodeRabbit Review on PR #812",
+    "body": "Walkthrough: PR #812 properly frees orphaned socket references. 1 minor suggestion: add docstring to _cleanup_ref(). Merge risk: Low."
+  },
+  {
+    "id": "gh-004",
+    "source": "GitHub",
+    "sender": "newbie-dev",
+    "timestamp": "2026-10-23T01:15:00Z",
+    "title": "Can I work on #810?",
+    "body": "Hey maintainers! I'd like to work on issue #810 for Hacktoberfest. Please assign me."
+  },
+  {
+    "id": "gh-005",
+    "source": "GitHub",
+    "sender": "another-student",
+    "timestamp": "2026-10-23T01:20:00Z",
+    "title": "Assign me #810 please",
+    "body": "Interested in fixing #810. Please assign to me!"
+  },
+  {
+    "id": "gh-006",
+    "source": "GitHub",
+    "sender": "spam-bot-88",
+    "timestamp": "2026-10-23T01:25:00Z",
+    "title": "PR #813: Fix typos in README.md",
+    "body": "Fixed spelling of 'implementation' and added Hacktoberfest badge to README."
+  },
+  {
+    "id": "gh-007",
+    "source": "GitHub",
+    "sender": "spam-bot-89",
+    "timestamp": "2026-10-23T01:28:00Z",
+    "title": "PR #814: Update README.md formatting",
+    "body": "Added trailing newline and fixed markdown list spacing."
+  },
+  {
+    "id": "gh-008",
+    "source": "GitHub",
+    "sender": "security-researcher-x",
+    "timestamp": "2026-10-23T02:00:00Z",
+    "title": "CRITICAL SECURITY ADVISORY (Private): Remote Code Execution in config parser",
+    "body": "Discovered unsafe yaml.load() call in server/config.py:44 instead of yaml.safe_load(). Attackers can supply custom tags in config upload to execute arbitrary python code. Exploit PoC attached."
+  },
+  {
+    "id": "gh-009",
+    "source": "Email",
+    "sender": "security-researcher-x <research@infosec.org>",
+    "timestamp": "2026-10-23T02:05:00Z",
+    "title": "URGENT Security Vulnerability Disclosure - YAML RCE",
+    "body": "Sent this via GitHub Security Advisory as well. Please acknowledge receipt within 48 hours. Ready to coordinate patch release."
+  },
+  {
+    "id": "gh-010",
+    "source": "GitHub",
+    "sender": "github-actions[bot]",
+    "timestamp": "2026-10-23T02:10:00Z",
+    "title": "Nightly release build failed",
+    "body": "Nightly build matrix failed on Windows Python 3.13: ImportError: DLL load failed while importing _sqlite3."
+  },
+  {
+    "id": "gh-011",
+    "source": "GitHub",
+    "sender": "github-actions[bot]",
+    "timestamp": "2026-10-23T02:15:00Z",
+    "title": "Scheduled security scan: 0 new vulnerabilities found",
+    "body": "Trivy container scan complete. 0 critical, 0 high."
+  },
+  {
+    "id": "gh-012",
+    "source": "Discord",
+    "sender": "community-user",
+    "timestamp": "2026-10-23T02:20:00Z",
+    "title": "Help with installation on Windows",
+    "body": "Getting 'poetry not found' error during setup. Anyone online to help?"
+  },
+  {
+    "id": "gh-013",
+    "source": "Discord",
+    "sender": "community-user",
+    "timestamp": "2026-10-23T02:30:00Z",
+    "title": "Nevermind figured it out!",
+    "body": "Had to add python scripts to PATH. All good now."
+  },
+  {
+    "id": "gh-014",
+    "source": "GitHub",
+    "sender": "dependabot[bot]",
+    "timestamp": "2026-10-23T03:00:00Z",
+    "title": "Bump fastapi from 0.115.0 to 0.115.2",
+    "body": "Bumps fastapi to latest patch release. All tests pass."
+  },
+  {
+    "id": "gh-015",
+    "source": "GitHub",
+    "sender": "dependabot[bot]",
+    "timestamp": "2026-10-23T03:02:00Z",
+    "title": "Bump pydantic from 2.9.1 to 2.9.2",
+    "body": "Bumps pydantic to latest patch release. All tests pass."
+  },
+  {
+    "id": "gh-016",
+    "source": "GitHub",
+    "sender": "contributor-42",
+    "timestamp": "2026-10-23T03:10:00Z",
+    "title": "Friendly ping on PR #812 review",
+    "body": "CI passed and CodeRabbit suggestions incorporated. Ready for maintainer merge whenever you have a moment!"
+  },
+  {
+    "id": "gh-017",
+    "source": "GitHub",
+    "sender": "stale-bot",
+    "timestamp": "2026-10-23T03:30:00Z",
+    "title": "Closed inactive PR #750",
+    "body": "PR #750 closed due to 30 days of inactivity."
+  },
+  {
+    "id": "gh-018",
+    "source": "GitHub",
+    "sender": "stale-bot",
+    "timestamp": "2026-10-23T03:32:00Z",
+    "title": "Closed inactive PR #751",
+    "body": "PR #751 closed due to 30 days of inactivity."
+  },
+  {
+    "id": "gh-019",
+    "source": "GitHub",
+    "sender": "enterprise-sponsor",
+    "timestamp": "2026-10-23T04:00:00Z",
+    "title": "New GitHub Sponsor: Acme Corp ($250/mo)",
+    "body": "Acme Corp has sponsored your open-source work at the Enterprise tier. Note: Thank you for building such reliable tools!"
+  },
+  {
+    "id": "gh-020",
+    "source": "Email",
+    "sender": "GitHub Sponsors <sponsors@github.com>",
+    "timestamp": "2026-10-23T04:02:00Z",
+    "title": "You received a new sponsor pledge",
+    "body": "Acme Corp is now sponsoring you for $250.00/month."
+  },
+  {
+    "id": "gh-021",
+    "source": "GitHub",
+    "sender": "dev-advocate",
+    "timestamp": "2026-10-23T04:30:00Z",
+    "title": "Invitation: Present at Open Source Summit 2026",
+    "body": "Hi Ganesh, we'd love to invite you to give a 20-minute lightning talk on local AI agents at OSS Summit. Speaker confirmation deadline is October 28."
+  },
+  {
+    "id": "gh-022",
+    "source": "Email",
+    "sender": "Conference Chair <chair@ossummit.org>",
+    "timestamp": "2026-10-23T04:35:00Z",
+    "title": "OSS Summit Speaker Invitation Confirmation Needed by Oct 28",
+    "body": "Following up on the GitHub message: please confirm your speaking availability and submit your talk title by October 28."
+  },
+  {
+    "id": "gh-023",
+    "source": "GitHub",
+    "sender": "user-feedback",
+    "timestamp": "2026-10-23T05:00:00Z",
+    "title": "Feature request: Add Dark Mode toggle to documentation",
+    "body": "The docs are currently light mode only. Can we add a dark mode toggle using VitePress or Starlight?"
+  },
+  {
+    "id": "gh-024",
+    "source": "GitHub",
+    "sender": "user-feedback",
+    "timestamp": "2026-10-23T05:05:00Z",
+    "title": "+1 on Dark Mode docs",
+    "body": "Agree, reading docs at night hurts eyes."
+  },
+  {
+    "id": "gh-025",
+    "source": "GitHub",
+    "sender": "user-feedback",
+    "timestamp": "2026-10-23T05:10:00Z",
+    "title": "+1 on Dark Mode",
+    "body": "Would love this!"
+  },
+  {
+    "id": "gh-026",
+    "source": "GitHub",
+    "sender": "user-feedback",
+    "timestamp": "2026-10-23T05:15:00Z",
+    "title": "+1",
+    "body": "+1"
+  },
+  {
+    "id": "gh-027",
+    "source": "GitHub",
+    "sender": "user-feedback",
+    "timestamp": "2026-10-23T05:20:00Z",
+    "title": "+1",
+    "body": "+1"
+  },
+  {
+    "id": "gh-028",
+    "source": "GitHub",
+    "sender": "user-feedback",
+    "timestamp": "2026-10-23T05:25:00Z",
+    "title": "PR #815: Add dark mode toggle to docs",
+    "body": "Implemented theme toggle in docs navbar with localStorage persistence. Closes #823."
+  },
+  {
+    "id": "gh-029",
+    "source": "GitHub",
+    "sender": "github-actions[bot]",
+    "timestamp": "2026-10-23T05:28:00Z",
+    "title": "Docs build passed for PR #815",
+    "body": "Preview deployment available at https://preview-815.example.com."
+  },
+  {
+    "id": "gh-030",
+    "source": "GitHub",
+    "sender": "package-tracker",
+    "timestamp": "2026-10-23T05:40:00Z",
+    "title": "PyPI monthly downloads crossed 50,000!",
+    "body": "Congratulations, your package reached 52,140 downloads this month on PyPI."
+  },
+  {
+    "id": "gh-031",
+    "source": "GitHub",
+    "sender": "user-question",
+    "timestamp": "2026-10-23T06:00:00Z",
+    "title": "Discussion: Does this support Python 3.14 alpha?",
+    "body": "Testing against 3.14-dev and seeing Cython compilation warning. Is 3.14 officially supported?"
+  },
+  {
+    "id": "gh-032",
+    "source": "GitHub",
+    "sender": "contributor-pro",
+    "timestamp": "2026-10-23T06:15:00Z",
+    "title": "Answered discussion: Does this support Python 3.14 alpha?",
+    "body": "Python 3.14 is currently pre-alpha; official support is targeted for next quarter once free-threaded CPython stabilizes."
+  },
+  {
+    "id": "gh-033",
+    "source": "GitHub",
+    "sender": "github-actions[bot]",
+    "timestamp": "2026-10-23T06:30:00Z",
+    "title": "CodeQL analysis passed: 0 alerts",
+    "body": "Static analysis check finished on main branch."
+  },
+  {
+    "id": "gh-034",
+    "source": "Email",
+    "sender": "GitHub Notifications <notifications@github.com>",
+    "timestamp": "2026-10-23T06:45:00Z",
+    "title": "Daily digest: 18 unread notifications in repository",
+    "body": "You have 18 unread notifications across 6 threads in your starred and watched repositories."
+  },
+  {
+    "id": "gh-035",
+    "source": "GitHub",
+    "sender": "security-researcher-x",
+    "timestamp": "2026-10-23T07:00:00Z",
+    "title": "PR #816: Fix YAML safe_load vulnerability (Security Hotfix)",
+    "body": "Draft PR addressing the private vulnerability disclosure: replaces yaml.load with yaml.safe_load and disallows dangerous custom constructors. Ready for maintainer review."
+  }
+]

@@ -1,0 +1,178 @@
+[
+  {
+    "id": "alert-001",
+    "source": "Datadog",
+    "sender": "Monitors",
+    "timestamp": "2026-10-23T04:10:00Z",
+    "title": "[Alert] MemoryUsage > 92% on worker-pod-3b",
+    "body": "Pod worker-pod-3b memory reached 94.2%. OOMKilled risk imminent. Restart backoff counter: 2."
+  },
+  {
+    "id": "alert-002",
+    "source": "Datadog",
+    "sender": "Monitors",
+    "timestamp": "2026-10-23T04:12:00Z",
+    "title": "[Alert] MemoryUsage > 95% on worker-pod-3b",
+    "body": "Pod worker-pod-3b memory reached 96.1%. Critical threshold exceeded."
+  },
+  {
+    "id": "alert-003",
+    "source": "Kubernetes",
+    "sender": "kube-event-router",
+    "timestamp": "2026-10-23T04:14:00Z",
+    "title": "Pod worker-pod-3b terminated (OOMKilled)",
+    "body": "Container worker in pod worker-pod-3b was terminated with exit code 137 (OOMKilled). Node: k8s-node-us-east-1a."
+  },
+  {
+    "id": "alert-004",
+    "source": "Kubernetes",
+    "sender": "kube-event-router",
+    "timestamp": "2026-10-23T04:15:00Z",
+    "title": "Pod worker-pod-3b restarted",
+    "body": "Container worker recreated. Current state: Running."
+  },
+  {
+    "id": "alert-005",
+    "source": "Sentry",
+    "sender": "error-tracker",
+    "timestamp": "2026-10-23T04:18:00Z",
+    "title": "Uncaught ConnectionResetError in async worker queue",
+    "body": "ConnectionResetError: Cannot write to redis://redis-master:6379 (socket closed). 42 occurrences in last 5 minutes."
+  },
+  {
+    "id": "alert-006",
+    "source": "Sentry",
+    "sender": "error-tracker",
+    "timestamp": "2026-10-23T04:20:00Z",
+    "title": "Uncaught ConnectionResetError in async worker queue (108 events)",
+    "body": "Issue #8102 spiking rapidly across all ingest workers. First seen at 04:15:00Z."
+  },
+  {
+    "id": "alert-007",
+    "source": "Slack",
+    "sender": "ops-oncall",
+    "timestamp": "2026-10-23T04:22:00Z",
+    "title": "Redis master failover in progress",
+    "body": "Sentinel detected master unresponsive. Promoting redis-replica-1 to master. Client connection blips expected for ~30s."
+  },
+  {
+    "id": "alert-008",
+    "source": "Slack",
+    "sender": "ops-oncall",
+    "timestamp": "2026-10-23T04:25:00Z",
+    "title": "Redis failover completed successfully",
+    "body": "Redis replica-1 is now primary. Sentry error rates returning to 0. Auto-healing complete."
+  },
+  {
+    "id": "alert-009",
+    "source": "AWS GuardDuty",
+    "sender": "security-alerts@aws.amazon.com",
+    "timestamp": "2026-10-23T04:30:00Z",
+    "title": "Unusual API call from unfamiliar IP address",
+    "body": "Principal: arn:aws:iam::123456789012:role/CI-Runner called DescribeInstances from IP 198.51.100.44 (GitHub Actions runner). Low severity informational."
+  },
+  {
+    "id": "alert-010",
+    "source": "GitHub",
+    "sender": "dependabot[bot]",
+    "timestamp": "2026-10-23T04:35:00Z",
+    "title": "Bump certifi from 2024.7.4 to 2024.8.30",
+    "body": "Bumps certifi to latest release. Automated security scan clean."
+  },
+  {
+    "id": "alert-011",
+    "source": "UptimeRobot",
+    "sender": "alert@uptimerobot.com",
+    "timestamp": "2026-10-23T04:40:00Z",
+    "title": "Monitor UP: API Healthcheck (200 OK)",
+    "body": "URL: https://api.prod.example.com/health. Response time: 42ms."
+  },
+  {
+    "id": "alert-012",
+    "source": "UptimeRobot",
+    "sender": "alert@uptimerobot.com",
+    "timestamp": "2026-10-23T05:40:00Z",
+    "title": "Monitor UP: API Healthcheck (200 OK)",
+    "body": "URL: https://api.prod.example.com/health. Response time: 39ms."
+  },
+  {
+    "id": "alert-013",
+    "source": "UptimeRobot",
+    "sender": "alert@uptimerobot.com",
+    "timestamp": "2026-10-23T06:40:00Z",
+    "title": "Monitor UP: API Healthcheck (200 OK)",
+    "body": "URL: https://api.prod.example.com/health. Response time: 44ms."
+  },
+  {
+    "id": "alert-014",
+    "source": "Slack",
+    "sender": "security-officer",
+    "timestamp": "2026-10-23T06:50:00Z",
+    "title": "ACTION REQUIRED: Rotate Staging DB Admin Password by 5 PM",
+    "body": "Routine 90-day secret rotation policy: the staging Postgres root password expires today at 5:00 PM. Update SSM Parameter Store /staging/db/password."
+  },
+  {
+    "id": "alert-015",
+    "source": "Jira",
+    "sender": "SEC-419",
+    "timestamp": "2026-10-23T06:52:00Z",
+    "title": "Quarterly Secret Rotation - Staging DB",
+    "body": "Due today 17:00 IST. Assigned to Ganesh Nair. Requires updating Vault/SSM and restarting staging API pods."
+  },
+  {
+    "id": "alert-016",
+    "source": "Slack",
+    "sender": "security-officer",
+    "timestamp": "2026-10-23T07:10:00Z",
+    "title": "Reminder: Staging DB Secret Rotation",
+    "body": "Just making sure this is on radar for before 5 PM to prevent staging pipeline disruptions."
+  },
+  {
+    "id": "alert-017",
+    "source": "Datadog",
+    "sender": "Monitors",
+    "timestamp": "2026-10-23T07:15:00Z",
+    "title": "[Info] Daily database backup completed",
+    "body": "Snapshot snapshot-prod-db-2026-10-23 created successfully. Size: 412 GB. Status: Available."
+  },
+  {
+    "id": "alert-018",
+    "source": "PagerDuty",
+    "sender": "AlertBot",
+    "timestamp": "2026-10-23T07:20:00Z",
+    "title": "[Info] Daily on-call handoff scheduled for 10:00 AM",
+    "body": "Primary on-call rotation handoff: Alex -> Ganesh. Review active alerts before handoff."
+  },
+  {
+    "id": "alert-019",
+    "source": "Slack",
+    "sender": "devops-chat",
+    "timestamp": "2026-10-23T07:25:00Z",
+    "title": "Morning standup cancelled today",
+    "body": "Friendly reminder: no morning standup today due to executive planning offsite. Post async updates in thread."
+  },
+  {
+    "id": "alert-020",
+    "source": "CloudWatch",
+    "sender": "aws-sns-alerts",
+    "timestamp": "2026-10-23T07:30:00Z",
+    "title": "ALARM: BillingForecastThresholdExceeded",
+    "body": "Current month forecast ($4,850) is approaching budget limit ($5,000). Review unattached EBS volumes."
+  },
+  {
+    "id": "alert-021",
+    "source": "Email",
+    "sender": "FinOps Bot <finops@company.com>",
+    "timestamp": "2026-10-23T07:32:00Z",
+    "title": "Action: Clean up 14 orphaned EBS volumes",
+    "body": "We identified 14 unattached gp3 EBS volumes in us-east-1 totaling 1.2 TB costing $96/month. Please delete unneeded snapshots/volumes."
+  },
+  {
+    "id": "alert-022",
+    "source": "Slack",
+    "sender": "alex.sre",
+    "timestamp": "2026-10-23T07:35:00Z",
+    "title": "Ready for on-call handoff?",
+    "body": "Hey Ganesh, everything is quiet in prod right now after the early morning Redis failover. Ready for handoff at 10?"
+  }
+]
