@@ -1,46 +1,31 @@
 ---
 title: CalmQueue: The Sloth-Speed AI That Turns 28 Daily Notifications Into 3 Quiet Actions
-published: false
-description: A local-first, open-source AI priority engine that cuts notification clutter by 89%. Built for Hacktoberfest 2026 Week 3: Slow and Steady.
+published: true
 tags: devchallenge, hf26challenge, opensource, ai
 ---
 
-*This is a submission for the [Hacktoberfest Open-Source AI Challenge: Week 3 — Slow and Steady](https://dev.to/challenges/hacktoberfest-week3-2026-10-19).*
+*This is a submission for the [Hacktoberfest Open-Source AI Challenge Week 3: Slow and Steady](https://dev.to/challenges/hacktoberfest-week3-2026-10-19)*
 
----
+## What I Built
 
-### The Morning Firehose
+Modern developers, team leads, and open-source maintainers face an exhausting morning ritual: opening their laptops to a wall of 25+ fragmented pings across Slack, GitHub, Linear, Jira, and email.
 
-Every morning at 8:45 AM, modern developers, engineering leads, and open-source maintainers open their laptops to a wall of fragmented digital demands:
+Triage fatigue is real. Reading, de-duplicating, and prioritizing overlapping alerts often takes more mental energy than writing code. Most AI tools exacerbate this by acting as conversational chatbots that generate another wall of prose—forcing you to read even more text just to figure out what needs attention.
 
-- 11 Slack messages across 4 direct messages and 3 channels.
-- 6 GitHub notifications (`@you can you review this PR?`, `@you CI is broken on main`).
-- 4 Jira/Linear ticket reassigments.
-- 3 PagerDuty low-severity cluster alerts that triggered overnight.
-- 4 emails from management asking for deck updates.
+**CalmQueue** was built to do the radical opposite. Guided by the Hacktoberfest "Slow and Steady" ethos, CalmQueue is an open-source, local-first notification assistant that **deliberately shows you less**:
 
-Total: **28 unread notifications.**
-
-Here is the dirty secret of modern productivity: **Reading and triaging the notifications takes more cognitive energy than doing the actual work.**
-
-When developers try using today's AI tools to solve this, they usually get an LLM chatbot. You paste in the messages, and the chatbot vomits back **four paragraphs of conversational text**, repeating everything in slightly different words. You haven't saved time; you've just added an AI intermediary to your reading pile.
-
-I built **CalmQueue** to do the radical opposite.
-
-Instead of an AI that talks more, CalmQueue is an AI that **deliberately shows you less**.
-
----
-
-## 🦥 What I Built: CalmQueue
-
-**CalmQueue** is an open-source, local-first AI assistant that accepts an unstructured stream of notifications, groups duplicate threads and noise, extracts grounded action items, and presents the user with **exactly three human-governed priority actions** for the day.
+- Ingests raw notification streams from multi-platform inboxes.
+- Groups repetitive alerts, automated bot clutter, and duplicate follow-ups using semantic TF-IDF cosine similarity.
+- Synthesizes exactly **three actionable priorities (P0, P1, P2)** for the workday.
+- Grounds every decision with verifiable verbatim quote evidence from the original source message.
+- Enforces strict human-in-the-loop oversight: draft responses require 1-click human review before copying, with zero silent external mutations.
 
 ```
 [BEFORE CALMQUEUE]
   28 unread messages
   8 duplicate alerts / repeated reminders
-  5 unclear deadlines
-  Too many micro-decisions ➡️ Decision paralysis
+  5 ambiguous deadlines
+  Too many micro-decisions ➡️ Mental fatigue & paralysis
 
 [AFTER CALMQUEUE]
   3 priority actions (P0, P1, P2)
@@ -50,49 +35,43 @@ Instead of an AI that talks more, CalmQueue is an AI that **deliberately shows y
   Zero silent external actions
 ```
 
-### The Core Interaction
-1. **Import Stream**: Paste or load notifications from Slack, GitHub, Linear, Jira, or email.
-2. **Semantic Clustering**: Open-source NLP and vector similarity cluster related messages (e.g., 6 separate Prometheus alerts or 4 follow-ups from the same project manager) into coherent threads and isolate automated bot chatter.
-3. **Grounded Priority Reasoning**: Extracts actionable intent, classifies urgency (`P0`, `P1`, `P2`), and differentiates **confirmed deadlines** (e.g., `"Need by 2:00 PM today"`) from **inferred cues** (e.g., `"whenever you have a free moment"`).
-4. **Quiet Dashboard**: Presents a clean, high-contrast dashboard with the top 3 priorities, verifiable evidence snippets, and pre-drafted replies.
-5. **Human-in-the-Loop Safeguard**: No automated emails or API mutations are sent behind your back. Users review the draft in an editable modal, click **"Approve & Copy"**, and the action is recorded in a local SQLite audit log.
+## Demo
 
----
+- **Live Interactive Web Demo (Zero-Install)**: [https://ganeshnair007.github.io/calmqueue/](https://ganeshnair007.github.io/calmqueue/)
+- Judges and community members can evaluate CalmQueue instantly in their browser with pre-bundled scenarios (*Chaotic Monday Morning*, *DevOps Alert Storm*, *Maintainer Backlog*) or import custom JSON payloads directly.
 
-## 🎥 Live Interactive Web Demo & UI Tour
+### UI Walkthrough:
+1. **The Quiet Dashboard**: High-contrast, minimalist interface showing the top 3 priorities, urgency badges (`P0 Critical`, `P1 High`, `P2 Moderate`), and deadline indicators distinguishing confirmed timestamps from inferred cues.
+2. **Evidence Grounding Drawer**: Expanding an item reveals exact verbatim source quotes, timestamps, authors, and channel tags.
+3. **Review & Approve Modal**: Allows the user to inspect, edit, and approve pre-formulated response drafts with local SQLite audit logging.
 
-- **Public Interactive Demo**: [https://ganeshnair007.github.io/calmqueue/](https://ganeshnair007.github.io/calmqueue/)
-- **Zero-Setup Evaluation**: Evaluators and judges can test CalmQueue immediately without installing Node or Python. The public demo runs a client-side triage engine with pre-bundled realistic notification datasets (Chaotic Monday, DevOps Alert Storm, Maintainer Backlog) and supports importing custom JSON payloads directly in the browser.
+## Code
 
-### The Quiet Dashboard
-Three cards are shown in order of urgency. Each card displays:
-- **Priority Tier**: `P0 Critical`, `P1 High`, or `P2 Moderate`.
-- **Action Title**: Concise, imperative verb phrase dynamically formulated from the message context.
-- **Deadline Pill**: Indicator distinguishing **Confirmed** deadlines (with specific times) from **Inferred** cues (soft urgency phrases).
-- **Source Platform Badge**: Shows which platforms contributed to this action (e.g., Slack + Jira).
-- **Clustered Message Count**: Number of messages consolidated into this single card.
-
-### Evidence Grounding Drawer
-Clicking **"Inspect Source Evidence"** expands an evidence drawer showing exact verbatim snippets, timestamps, authors, and channel names extracted from the raw messages.
-
-### Human Approval Modal
-Clicking **"Review & Approve Draft"** opens an approval modal containing the formulated response draft. The user can review, edit, and click **"Approve & Copy"**, which copies the text to the clipboard and records the approval timestamp in the local audit log.
-
----
-
-## 💻 Open-Source Code Repository
-
-All code, benchmark datasets, and documentation are open-source and released under the MIT license:
+CalmQueue is 100% open-source under the MIT license:
 
 - **GitHub Repository**: [https://github.com/GaneshNair007/calmqueue](https://github.com/GaneshNair007/calmqueue)
 - **Live Interactive Demo**: [https://ganeshnair007.github.io/calmqueue/](https://ganeshnair007.github.io/calmqueue/)
-- **Local Quickstart**: Clone and run `python run.py` (takes under 60 seconds).
 
----
+### Local Quickstart:
+```bash
+# 1. Clone the repository
+git clone https://github.com/GaneshNair007/calmqueue.git
+cd calmqueue
 
-## 🛠️ How I Built It: Open-Source AI Architecture
+# 2. Install requirements
+pip install -r requirements.txt
 
-CalmQueue is engineered as a **local-first** application. Your team's private Slack messages and internal security advisories never travel to proprietary third-party cloud APIs.
+# 3. (Optional) Run Ollama for local LLM inference
+# ollama run gemma2:2b
+
+# 4. Launch CalmQueue
+python run.py
+```
+Open `http://localhost:8000` to run the local FastAPI + React 19 application.
+
+## How I Built It
+
+CalmQueue is engineered as a **local-first** application with an auditable dual-mode architecture:
 
 ```
  ┌────────────────────────────────────────────────────────┐
@@ -134,95 +113,45 @@ CalmQueue is engineered as a **local-first** application. Your team's private Sl
  └────────────────────────────────────────────────────────┘
 ```
 
-### The Technology Stack & Inference Engine:
-- **Inference & Reasoning Runtime**:
-  - Connects to local **Ollama** via `/api/chat` passing structured JSON schemas for action synthesis.
-  - **Grounded Quote Validation**: Extracted evidence quotes must match verbatim substrings in the original input text. Unsupported or fabricated statements are stripped.
-  - **Transparent Dual-Mode Fallback**: If the local Ollama daemon is offline or no model is loaded, the pipeline gracefully runs its deterministic rule-based NLP extraction, explicitly tagging every action with `generation_method='rule-based-fallback'` and reporting the active runtime.
-  - **Accurate Latency Tracking**: Records true model inference time (`model_inference_latency_ms`) separately from deterministic execution latency.
-- **Embeddings & Clustering**: TF-IDF vector space modeling with stopword elimination and n-gram similarity scoring.
-- **Backend API**: Python 3.12, **FastAPI**, Pydantic v2, SQLite.
-- **Frontend**: **React 19**, TypeScript, Vite, CSS Design Tokens (Vanilla CSS, no bulky UI framework dependencies).
-- **Test Suite**: pytest (11/11 automated tests passing, covering API endpoints, deterministic extraction, and mock Ollama `/api/chat` inference with quote grounding).
+### Technical Pillars:
+1. **Semantic Clustering (`backend/app/clustering.py`)**:
+   - Converts message bodies, senders, and thread tags into n-gram TF-IDF vectors.
+   - Computes cosine similarity to group duplicate alerts (e.g., 6 Prometheus OOMKill spikes or 4 Jira re-assignments) and isolates automated bot clutter.
+2. **Grounded Priority Extraction (`backend/app/gemma_engine.py`)**:
+   - **Local Open-Weight LLM Bridge**: When [Ollama](https://ollama.com/) is running locally, CalmQueue connects to `/api/chat` with structured JSON schema constraints, requesting priority classification, concise imperative titles, and draft actions.
+   - **Verbatim Quote Grounding Validation**: Extracted evidence must strictly match verbatim substrings in the raw input text. Unsupported or fabricated statements are stripped.
+   - **Transparent Rule-Based Fallback**: If Ollama is offline or uninstalled, the engine gracefully executes a deterministic heuristic NLP pipeline, explicitly labeling outputs with `generation_method='rule-based-fallback'` and reporting the active runtime.
+   - **True Latency Recording**: Captures true model inference time (`model_inference_latency_ms`) separately from deterministic execution latency.
+3. **Quiet Interface & Human Safeguard**:
+   - Built with **React 19**, TypeScript, and Vite.
+   - Approval events are recorded with local timestamps in SQLite (`calmqueue.db`).
+   - Automated tests: 11/11 passing in pytest (`backend/tests/`).
 
----
+## Why Does Open Innovation Matter?
 
-## 📊 Real Benchmark Measurements
+Open innovation is fundamental to CalmQueue's purpose:
 
-To adhere to the Hacktoberfest evaluation criteria, I wrote an automated benchmark suite (`benchmarks/run_eval.py`) that tests CalmQueue against three realistic, authentic workloads:
+1. **Confidentiality & Data Sovereignty**: Internal Slack messages, security vulnerability disclosures, and production outage alerts contain confidential proprietary business data and PII. Transmitting these message streams to third-party proprietary cloud APIs presents unacceptable compliance, legal, and privacy risks. Running open-weight models locally ensures private data never leaves your computer.
+2. **Offline Resilience & Zero Recurring Cost**: Closed cloud APIs require an active internet connection and incur per-token subscription costs that scale with message volume. Open-weight models running on local hardware work seamlessly without an internet connection (e.g. while traveling) and cost nothing in ongoing API bills.
+3. **Auditable, Verifiable AI**: Closed APIs change models silently behind version endpoints, causing classification and formatting regressions without warning. Open-source models and deterministic validation pipelines can be pinned, inspected, and verified against reproducible test suites.
 
-1. **Chaotic Monday Morning** (28 items): Typical engineering lead inbox with overlapping PR reviews, sprint planning reminders, Jira blockers, and cross-channel chatter.
-2. **DevOps Alert Storm** (22 items): Cascading infrastructure failure with multiple Prometheus OOMKill spikes, Redis latency warnings, automated health check alerts, and AWS SSM rotation notices.
-3. **Open-Source Maintainer Backlog** (35 items): High-volume public repo triage with duplicated "good first issue" requests, Dependabot alerts, spam bot comments, and a critical YAML deserialization security report.
+## The Lazy Payoff
 
-Here are the real, empirical benchmark results:
+CalmQueue was built for developers who want to triage their backlog and get back to living their lives.
 
-| Benchmark Dataset | Raw Messages | Duplicate Clusters Grouped | Noise Items Isolated | Priority Actions Surfaced | Displayed Volume Reduction Rate | Processing Latency | Peak Memory | Active Engine |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Chaotic Monday Morning** | 28 | 3 | 4 | **3** | **89.3%** | ~55 ms | 182.5 KB | `rule-based-fallback` |
-| **DevOps Alert Storm** | 22 | 4 | 1 | **3** | **86.4%** | ~18 ms | 84.6 KB | `rule-based-fallback` |
-| **Maintainer Backlog** | 35 | 5 | 6 | **3** | **91.4%** | ~45 ms | 116.0 KB | `rule-based-fallback` |
+We evaluated CalmQueue across three authentic synthetic workloads using `benchmarks/run_eval.py`:
 
-*Note: In the evaluation environment without a running GPU/Ollama instance, benchmarks reflect the deterministic fallback runtime. Full LLM inference latency varies by local hardware (typically 1.2s - 3.5s on 4-bit quantized 2B-7B models).*
+| Benchmark Dataset | Raw Influx | Duplicate Clusters | Filtered Noise | Priorities Surfaced | Displayed Volume Reduction | Processing Latency | Active Engine |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Chaotic Monday Morning** | 28 | 3 | 4 | **3** | **89.3%** | ~52 ms | `rule-based-fallback` |
+| **DevOps Alert Storm** | 22 | 4 | 1 | **3** | **86.4%** | ~24 ms | `rule-based-fallback` |
+| **Maintainer Backlog** | 35 | 5 | 6 | **3** | **91.4%** | ~44 ms | `rule-based-fallback` |
 
-### Key Benchmark Takeaways:
-- **Displayed Volume Reduction: 89.03% average**. By clustering duplicates and isolating noise, CalmQueue reduces the volume of surfaced items from an average of 28.3 down to exactly 3.
-- **Sub-60ms Processing Latency** (Fallback Mode): The local deterministic pipeline executes in milliseconds without waiting on cloud network round-trips.
-- **Confirmed vs. Inferred Deadlines**: Explicitly distinguishes hard deadlines (e.g. `"before 2:00 PM"`) from soft cues (e.g. `"when you get a chance"`), avoiding false-urgency panic.
+*Average Displayed Volume Reduction: 89.03% across test workloads.*
 
----
+Instead of sifting through 28 notifications, you review exactly three actionable items, approve the prepared responses in under two minutes, and spend your day doing deep work—or taking it slow like a sloth.
 
-## 🛡️ Human-in-the-Loop Safeguards & Ethical AI
+## Prize Categories
 
-A major failure mode of recent "AI Agents" is **unsupervised automation**—bots sending emails, deleting issues, or merging pull requests without human verification.
-
-CalmQueue enforces three core architectural safeguards:
-1. **No Silent Side-Effects**: CalmQueue has no outbound webhooks that send emails, post Slack messages, or mutate repositories autonomously.
-2. **Mandatory Human Approval**: Every generated draft must be reviewed, edited if necessary, and approved by the user.
-3. **Persistent Local Audit Log**: When a draft is approved, a record is stored in the local SQLite database (`calmqueue.db`) containing the timestamp, action ID, and user-confirmed text.
-
----
-
-## 💡 Lessons Learned & Architectural Trade-offs
-
-During development, two key architectural lessons shaped the final design:
-
-1. **Single-Prompt LLM Summarization vs. Staged Pipeline**:
-   - Sending an entire 28-message stream into a single prompt often resulted in the model blending distinct alerts together or omitting quiet, high-severity operational tickets.
-   - Decomposing the system into an initial **clustering and noise-filtering stage** followed by **per-cluster action synthesis** produced much more reliable, auditable outputs.
-
-2. **The "Rule of Three" for Attention Conservation**:
-   - Displaying 10+ categorized cards still creates cognitive fatigue. Enforcing a strict cap of the top three highest-urgency items forces clarity on what actually requires attention today, while secondary clusters remain accessible on demand.
-
----
-
-## 🏁 Prize Categories Targeted
-
-- **Overall Winner ($250)**: Built for the **"Slow and Steady"** theme by creating an open-source AI assistant that reduces noise, promotes human calm, automates tedious inbox triage, and enforces human oversight.
-- **DEV Completion Badge**: Awarded to all valid, reproducible open-source AI projects meeting the challenge requirements.
-
----
-
-## 📦 How to Run CalmQueue Locally
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/GaneshNair007/calmqueue.git
-cd calmqueue
-
-# 2. Install requirements
-pip install -r requirements.txt
-
-# 3. (Optional) Run Ollama for local LLM inference
-# ollama run gemma2:2b
-
-# 4. Launch CalmQueue
-python run.py
-```
-Open **`http://localhost:8000`** in your browser to experience the Quiet Dashboard.
-Or explore the zero-install live demo at: **`https://ganeshnair007.github.io/calmqueue/`**
-
----
-
-*Thank you to DEV, Major League Hacking, and the open-source community for organizing Hacktoberfest 2026. Here's to slowing down, triaging less, and building steady!*
-
+- **Overall Winner ($250)**: Built for the **"Slow and Steady"** theme by creating an open-source AI assistant that champions radical cognitive subtraction, protects user attention, and enforces human oversight.
+- **DEV Completion Badge**: Fully reproducible open-source AI application meeting all challenge guidelines.
