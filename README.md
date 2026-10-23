@@ -7,10 +7,10 @@
 [![Python 3.12](https://img.shields.io/badge/Python-3.12%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 [![React 19](https://img.shields.io/badge/Frontend-React%2019%20%2B%20TypeScript-61dafb.svg)](https://react.dev/)
-[![Gemma Open Weights](https://img.shields.io/badge/AI%20Model-Gemma%20Open%20Weights-orange.svg)](https://ai.google.dev/gemma)
+[![Open Source AI](https://img.shields.io/badge/AI-Open%20Source%20NLP%20%2B%20Ollama%20Bridge-brightgreen.svg)](https://github.com/GaneshNair007/calmqueue)
 [![Tests Passing](https://img.shields.io/badge/Tests-9%20Passing-brightgreen.svg)](backend/tests/)
 
-**CalmQueue** is a local-first, open-weight AI notification priority engine built specifically for the **Hacktoberfest Open-Source AI Challenge: Week 3 ("Slow and Steady")**, hosted by DEV Community & Major League Hacking (MLH).
+**CalmQueue** is a local-first open-source AI notification assistant built for the **Hacktoberfest Open-Source AI Challenge: Week 3 ("Slow and Steady")**, hosted by DEV Community & Major League Hacking (MLH).
 
 ---
 
@@ -41,10 +41,10 @@ CalmQueue does the exact opposite. Guided by the "Slow and Steady" ethos, CalmQu
   Duplicates clustered and deduplicated
   Verifiable source evidence attached to each decision
   Human-approved draft replies with zero silent side-effects
-  89.3% reduction in cognitive review load
+  89.3% reduction in displayed inbox volume
 ```
 
-CalmQueue extracts the exact **three** things you actually need to do today, isolates what is noise, and lets you log off and breathe.
+CalmQueue extracts the exact **three** things you actually need to do today, isolates background noise, and lets you log off and breathe.
 
 ---
 
@@ -54,9 +54,9 @@ CalmQueue runs 100% locally on your machine. Your private communications, securi
 
 ```mermaid
 graph TD
-    A[Raw Notification Stream\nSlack, GitHub, Jira, PagerDuty] --> B[Semantic Cluster Engine\nTF-IDF Cosine & Sentence-Transformers]
+    A[Raw Notification Stream\nSlack, GitHub, Jira, PagerDuty] --> B[Semantic Cluster Engine\nTF-IDF Cosine & N-gram Vector Space]
     B -->|Filter 85%+ Clutter| C[Grouped Semantic Clusters & Noise Isolation]
-    C --> D[Open-Weight Gemma Reasoning Engine\nOllama gemma2:2b / Embedded Open-Weight Fallback]
+    C --> D[Priority Task & Evidence Grounding Engine\nDynamic NLP Extractor + Local Ollama Bridge]
     D --> E[Priority Ranker & Evidence Grounding\nConfidence-Ranked Deadlines]
     E --> F[Top 3 Actionable Priorities\nWith Verifiable Quote Citations]
     F --> G[Human-in-the-Loop Safeguard\nApprove & Copy Audit Log]
@@ -70,9 +70,9 @@ graph TD
    - Automatically clusters repeated alerts (e.g., 6 separate Prometheus OOMKill spikes or 5 Slack reminders about a deck) into single cohesive units.
    - Flags automated bot chatter and routine newsletters as filtered noise.
 
-2. **Open-Weight Gemma Reasoning Engine (`backend/app/gemma_engine.py`)**:
-   - Integrates Google's **Gemma** open-weight model family.
-   - Dual-mode architecture: connects seamlessly to local **Ollama** (`gemma2:2b` or `gemma:2b`) when running, or executes deterministic grounded reasoning with zero cloud dependencies.
+2. **Transparent Dual-Mode Task Engine (`backend/app/gemma_engine.py`)**:
+   - **Local LLM Bridge**: When [Ollama](https://ollama.com/) is running locally, CalmQueue connects to your local open-weight model (`gemma2:2b`, `qwen`, or `llama3`) and reports `active_runtime: ollama-<model>`.
+   - **Deterministic NLP Grounded Pipeline**: When no local LLM daemon is running, CalmQueue executes a deterministic, zero-hallucination NLP extraction pipeline that extracts imperatives, confirmed vs. inferred deadlines, and grounds every action in verifiable quote snippets.
    - Dissects each cluster into:
      - Clear, actionable title.
      - Urgency tier (`P0 Critical`, `P1 High`, `P2 Moderate`).
@@ -90,15 +90,17 @@ graph TD
 
 ## 📊 Empirical Benchmarks
 
-We evaluated CalmQueue across three authentic synthetic workloads using `benchmarks/run_eval.py`. Every number below is an actual empirical measurement:
+We evaluated CalmQueue across three authentic synthetic workloads using `benchmarks/run_eval.py`.
 
-| Benchmark Dataset | Raw Messages | Duplicate Clusters | Noise Filtered | Top Actions Surfaced | Cognitive Reduction | Inference Latency |
-|:-------------------|:------------:|:------------------:|:--------------:|:--------------------:|:--------------------:|:-----------------:|
-| **Chaotic Monday Morning** | 28 | 3 | 2 | **3** | **89.3%** | 54.5 ms |
-| **DevOps Alert Storm** | 22 | 4 | 3 | **3** | **86.4%** | 21.4 ms |
-| **Maintainer Backlog** | 35 | 5 | 4 | **3** | **91.4%** | 46.2 ms |
+*(Note: "Displayed Volume Reduction Rate" measures the reduction in surfaced items requiring human review across synthetic test scenarios, from N input messages to exactly 3 priority actions.)*
 
-> Average clutter elimination across all workloads: **89.03%**.
+| Benchmark Dataset | Raw Messages | Duplicate Clusters | Noise Filtered | Top Actions Surfaced | Displayed Volume Reduction | Processing Latency |
+|:-------------------|:------------:|:------------------:|:--------------:|:--------------------:|:--------------------------:|:-----------------:|
+| **Chaotic Monday Morning** | 28 | 3 | 4 | **3** | **89.3%** | ~55 ms |
+| **DevOps Alert Storm** | 22 | 4 | 1 | **3** | **86.4%** | ~18 ms |
+| **Maintainer Backlog** | 35 | 5 | 6 | **3** | **91.4%** | ~45 ms |
+
+> Average clutter volume reduction across all synthetic workloads: **89.03%**.
 
 ---
 
@@ -108,7 +110,7 @@ CalmQueue is designed to run in under two minutes with zero API keys or external
 
 ### Prerequisites
 - Python 3.10+ (tested on Python 3.12)
-- Node.js 18+ (only needed if modifying frontend; pre-built production bundle included!)
+- Node.js 18+ (only needed if modifying frontend; pre-built production bundle included in `frontend/dist/`!)
 - *(Optional)* [Ollama](https://ollama.com/) with `ollama pull gemma2:2b`
 
 ### 1. Clone & Install
@@ -149,7 +151,7 @@ Output:
 ```
 backend/tests/test_api.py .....                                          [ 55%]
 backend/tests/test_clustering.py ....                                    [100%]
-============================== 9 passed in 2.03s ==============================
+============================== 9 passed in 2.58s ==============================
 ```
 
 To run the standalone benchmark evaluation runner:
@@ -172,9 +174,9 @@ The user interface follows Dieter Rams' tenet: *"Less, but better."*
 ## 🏆 Hacktoberfest 2026 Week 3 Submission Details
 
 - **Challenge**: [Hacktoberfest Open-Source AI Challenge: Week 3 — Slow and Steady](https://dev.to/challenges/hacktoberfest-week3-2026-10-19)
-- **Target Categories**:
-  1. **Overall Winner** ($250 + DEV++ + exclusive badge) — Exemplifies the Slow and Steady philosophy through radical subtraction and cognitive calm.
-  2. **Best Use of Gemma** ($200 + exclusive badge) — Meaningful open-weight reasoning, local privacy, and grounded evidence extraction.
+- **Target Category**:
+  - **Overall Winner** ($250 + DEV++ + exclusive badge) — Exemplifies the Slow and Steady philosophy through radical subtraction, cognitive calm, and human agency.
+  - **DEV Completion Badge** — Valid, reproducible open-source AI project meeting all challenge rules.
 - **Required Submission Tags**: `#devchallenge`, `#hf26challenge`
 - **Submission Article**: [`docs/dev_article_submission.md`](docs/dev_article_submission.md)
 

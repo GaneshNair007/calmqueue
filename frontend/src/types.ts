@@ -41,6 +41,7 @@ export interface QueueResponse {
   total_raw: number;
   unique_clusters: number;
   duplicates_filtered: number;
+  volume_reduction_pct?: number;
   noise_reduction_pct: number;
   top_actions: PriorityAction[];
   all_clusters: ClusterGroup[];
@@ -62,6 +63,7 @@ export interface BenchmarkMetrics {
   raw_message_count: number;
   duplicate_clusters_found: number;
   noise_items_filtered: number;
+  volume_reduction_pct?: number;
   cognitive_load_reduction_pct: number;
   priority_action_count: number;
   confirmed_deadlines_count: number;

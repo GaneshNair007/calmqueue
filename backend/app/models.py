@@ -48,7 +48,8 @@ class QueueResponse(BaseModel):
     total_raw: int
     unique_clusters: int
     duplicates_filtered: int
-    noise_reduction_pct: float
+    volume_reduction_pct: float
+    noise_reduction_pct: float = 0.0  # backward compatibility alias
     top_actions: List[PriorityAction]
     all_clusters: List[ClusterGroup]
     execution_latency_ms: float
@@ -75,7 +76,8 @@ class BenchmarkMetrics(BaseModel):
     raw_message_count: int
     duplicate_clusters_found: int
     noise_items_filtered: int
-    cognitive_load_reduction_pct: float
+    volume_reduction_pct: float
+    cognitive_load_reduction_pct: float = 0.0  # legacy alias
     priority_action_count: int
     confirmed_deadlines_count: int
     inferred_deadlines_count: int

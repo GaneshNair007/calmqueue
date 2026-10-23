@@ -1,9 +1,8 @@
 ---
 title: CalmQueue: The Sloth-Speed AI That Turns 28 Daily Notifications Into 3 Quiet Actions
 published: false
-description: A local-first, open-weight AI priority engine built with Gemma that cuts notification clutter by 89%. Built for Hacktoberfest 2026 Week 3: Slow and Steady.
-tags: devchallenge, hf26challenge, gemma, opensource
-cover_image: https://raw.githubusercontent.com/GaneshNair007/calmqueue/main/docs/assets/calmqueue_banner.png
+description: A local-first, open-source AI priority engine that cuts notification clutter by 89%. Built for Hacktoberfest 2026 Week 3: Slow and Steady.
+tags: devchallenge, hf26challenge, opensource, ai
 ---
 
 *This is a submission for the [Hacktoberfest Open-Source AI Challenge: Week 3 — Slow and Steady](https://dev.to/challenges/hacktoberfest-week3-2026-10-19).*
@@ -15,7 +14,7 @@ cover_image: https://raw.githubusercontent.com/GaneshNair007/calmqueue/main/docs
 Every morning at 8:45 AM, modern developers, engineering leads, and open-source maintainers open their laptops to a wall of fragmented digital demands:
 
 - 11 Slack messages across 4 direct messages and 3 channels.
-- 6 GitHub mentions (`@you can you review this PR?`, `@you CI is broken on main`).
+- 6 GitHub notifications (`@you can you review this PR?`, `@you CI is broken on main`).
 - 4 Jira/Linear ticket reassigments.
 - 3 PagerDuty low-severity cluster alerts that triggered overnight.
 - 4 emails from management asking for deck updates.
@@ -34,7 +33,7 @@ Instead of an AI that talks more, CalmQueue is an AI that **deliberately shows y
 
 ## 🦥 What I Built: CalmQueue
 
-**CalmQueue** is an open-source, local-first AI assistant that accepts an unstructured stream of notifications, groups duplicate threads and noise, uses Google's open-weight **Gemma** model to extract grounded action items, and presents the user with **exactly three human-governed priority actions** for the day.
+**CalmQueue** is an open-source, local-first AI assistant that accepts an unstructured stream of notifications, groups duplicate threads and noise, extracts grounded action items, and presents the user with **exactly three human-governed priority actions** for the day.
 
 ```
 [BEFORE CALMQUEUE]
@@ -53,8 +52,8 @@ Instead of an AI that talks more, CalmQueue is an AI that **deliberately shows y
 
 ### The Core Interaction
 1. **Import Stream**: Paste or load notifications from Slack, GitHub, Linear, Jira, or email.
-2. **Semantic Clustering**: Open-source embeddings cluster related messages (e.g., 6 separate Prometheus alerts or 4 follow-ups from the same project manager) into coherent threads and isolate automated noise.
-3. **Gemma Task Reasoning**: Gemma extracts actionable intent, classifies urgency (`P0`, `P1`, `P2`), and differentiates **confirmed deadlines** (e.g., `"Need by 3:00 PM today"`) from **inferred cues** (e.g., `"whenever you have a free moment"`).
+2. **Semantic Clustering**: Open-source NLP and vector similarity cluster related messages (e.g., 6 separate Prometheus alerts or 4 follow-ups from the same project manager) into coherent threads and isolate automated bot chatter.
+3. **Grounded Priority Reasoning**: Extracts actionable intent, classifies urgency (`P0`, `P1`, `P2`), and differentiates **confirmed deadlines** (e.g., `"Need by 2:00 PM today"`) from **inferred cues** (e.g., `"whenever you have a free moment"`).
 4. **Quiet Dashboard**: Presents a clean, high-contrast dashboard with the top 3 priorities, verifiable evidence snippets, and pre-drafted replies.
 5. **Human-in-the-Loop Safeguard**: No automated emails or API mutations are sent behind your back. Users review the draft in an editable modal, click **"Approve & Copy"**, and the action is recorded in a local SQLite audit log.
 
@@ -67,7 +66,7 @@ CalmQueue's user interface is purposefully stark: black typography on pure white
 ### 1. The Quiet Dashboard
 Three cards are shown in order of urgency. Each card displays:
 - **Priority Tier**: `P0 Critical`, `P1 High`, or `P2 Moderate`.
-- **Action Title**: Concise, imperative verb phrase.
+- **Action Title**: Concise, imperative verb phrase dynamically formulated from the message context.
 - **Deadline Pill**: Color-coded indicator showing whether the deadline is **Confirmed** (green) or **Inferred** (amber).
 - **Source Platform Badge**: Shows which platforms contributed to this action (e.g., Slack + Jira).
 - **Clustered Message Count**: Number of messages consolidated into this single card.
@@ -102,16 +101,17 @@ CalmQueue is engineered as a **local-first** application. Your team's private Sl
                              ▼
  ┌────────────────────────────────────────────────────────┐
  │            1. SEMANTIC CLUSTER ENGINE                  │
- │   - Sentence Transformers (all-MiniLM-L6-v2)           │
- │   - TF-IDF Cosine Similarity (threshold: 0.58)        │
+ │   - TF-IDF N-Gram Vector Space Cosine Similarity       │
  │   - Noise & Automated Bot Filter                       │
+ │   - Multi-platform thread deduplication                │
  └───────────────────────────┬────────────────────────────┘
                              │ Grouped Clusters
                              ▼
  ┌────────────────────────────────────────────────────────┐
- │        2. OPEN-WEIGHT GEMMA REASONING ENGINE           │
- │   - Primary: Local Ollama (gemma2:2b / gemma:2b)       │
- │   - Standalone: Embedded Open-Weight Pipeline          │
+ │        2. TASK REASONING & EXTRACTION ENGINE           │
+ │   - Transparent Dual-Mode Design                       │
+ │   - Local Ollama Bridge (when LLM daemon is running)   │
+ │   - Deterministic Grounded NLP Pipeline (offline)      │
  │   - Zero cloud API dependency / 100% offline-ready     │
  └───────────────────────────┬────────────────────────────┘
                              │ Structured Actions
@@ -133,35 +133,15 @@ CalmQueue is engineered as a **local-first** application. Your team's private Sl
 ```
 
 ### The Technology Stack:
-- **Inference & Reasoning**: Google **Gemma** open-weights (`gemma2:2b` via Ollama REST API, with an embedded open-weight pipeline that requires zero setup).
-- **Embeddings & Clustering**: `sentence-transformers` & `scikit-learn` for semantic deduplication.
+- **Inference & Reasoning**: Dual-mode engine: connects to local **Ollama** when running, and executes a transparent, zero-hallucination deterministic NLP extraction pipeline when offline.
+- **Embeddings & Clustering**: TF-IDF vector space modeling with stopword elimination and n-gram similarity scoring.
 - **Backend API**: Python 3.12, **FastAPI**, Pydantic v2, SQLite.
 - **Frontend**: **React 19**, TypeScript, Vite, CSS Design Tokens (Vanilla CSS, no bulky framework dependencies).
-- **Test Suite**: pytest, pytest-cov (100% passing automated test suite).
+- **Test Suite**: pytest (9/9 automated tests passing).
 
 ---
 
-## 🧪 Meaningful Use of Partner Tech: Why Gemma?
-
-For the **Best Use of Gemma** category, I chose Gemma because instruction-following in compact, edge-capable models is where open-weight AI shines.
-
-Large 70B parameter models are overkill for triaging morning notifications, and sending sensitive work notifications to proprietary cloud endpoints introduces major data-governance risks.
-
-Gemma 2 (2B) excels at this task:
-1. **Low Memory Footprint**: Runs comfortably on consumer laptops (CPU or integrated GPU) with ~1.6 GB VRAM.
-2. **Structured JSON Output**: With a carefully constrained system prompt, Gemma accurately formats structured fields (`action_title`, `urgency_tier`, `deadline_confidence`, `draft_response`) without drifting into conversational fluff.
-3. **Verifiable Quotation**: Gemma is instructed to extract exact substrings for evidence grounding, eliminating hallucinated justifications.
-
-### Resilient Dual-Mode Runtime
-To ensure that hackathon evaluators can run the project in any environment, CalmQueue features a **transparent fallback architecture**:
-- If Ollama is running locally with `gemma2:2b` or `gemma:2b`, CalmQueue routes inference through Ollama.
-- If Ollama is not installed or the user is in an offline container, CalmQueue automatically engages its embedded open-weight pipeline.
-
-Zero crashes, zero API key errors, zero cloud bills.
-
----
-
-## 📊 Real Benchmark Measurements: The Empirical Payoff
+## 📊 Real Benchmark Measurements
 
 To adhere to the Hacktoberfest evaluation criteria, I wrote an automated benchmark suite (`benchmarks/run_eval.py`) that tests CalmQueue against three realistic, authentic workloads:
 
@@ -169,18 +149,18 @@ To adhere to the Hacktoberfest evaluation criteria, I wrote an automated benchma
 2. **DevOps Alert Storm** (22 items): Cascading infrastructure failure with multiple Prometheus OOMKill spikes, Redis latency warnings, automated health check alerts, and AWS SSM rotation notices.
 3. **Open-Source Maintainer Backlog** (35 items): High-volume public repo triage with duplicated "good first issue" requests, Dependabot alerts, spam bot comments, and a critical YAML deserialization security report.
 
-Here are the real, un-doctored benchmark results:
+Here are the real, empirical benchmark results:
 
-| Benchmark Dataset | Raw Messages | Duplicate Clusters Grouped | Noise Items Isolated | Priority Actions Surfaced | Cognitive Reduction | Triage Latency |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Chaotic Monday Morning** | 28 | 3 | 2 | **3** | **89.3%** | 54.5 ms |
-| **DevOps Alert Storm** | 22 | 4 | 3 | **3** | **86.4%** | 21.4 ms |
-| **Maintainer Backlog** | 35 | 5 | 4 | **3** | **91.4%** | 46.2 ms |
+| Benchmark Dataset | Raw Messages | Duplicate Clusters Grouped | Noise Items Isolated | Priority Actions Surfaced | Displayed Volume Reduction Rate | Processing Latency | Peak Memory |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Chaotic Monday Morning** | 28 | 3 | 4 | **3** | **89.3%** | ~55 ms | 182.5 KB |
+| **DevOps Alert Storm** | 22 | 4 | 1 | **3** | **86.4%** | ~18 ms | 84.6 KB |
+| **Maintainer Backlog** | 35 | 5 | 6 | **3** | **91.4%** | ~45 ms | 116.0 KB |
 
 ### Key Benchmark Takeaways:
-- **Average Cognitive Load Reduction: 89.03%**. Instead of parsing an average of 28.3 messages, the human reviewer only needs to read 3 clearly prioritized cards.
-- **Sub-100ms Latency**: The semantic deduplication layer filters out over 85% of redundant text before reasoning, keeping the overall pipeline blazing fast on modest hardware.
-- **Zero Hallucinated Deadlines**: By explicitly separating **Confirmed** deadlines from **Inferred** conversational cues, CalmQueue prevented 100% of false-urgency panic (e.g., misinterpreting *"take a look when you get a chance"* as a hard deadline).
+- **Displayed Volume Reduction: 89.03% average**. By clustering duplicates and isolating noise, CalmQueue reduces the volume of surfaced items from an average of 28.3 down to exactly 3.
+- **Sub-60ms Processing Latency**: The local pipeline executes in milliseconds without waiting on cloud network round-trips.
+- **Confirmed vs. Inferred Deadlines**: Explicitly distinguishes hard deadlines (e.g. `"before 2:00 PM"`) from soft cues (e.g. `"when you get a chance"`), avoiding false-urgency panic.
 
 ---
 
@@ -202,7 +182,7 @@ During development, two initial approaches failed before reaching the current ar
 1. **Naive Single-Prompt LLM Summarization**:
    - *Attempt*: Sending all 28 messages directly to an LLM in one large prompt asking for a "summary".
    - *Result*: The model hallucinated relationships between unrelated messages, missed a critical PagerDuty alert buried in the middle, and generated a wall of bullet points that was almost as long as the original inbox.
-   - *Correction*: Splitting the pipeline into a **deterministic clustering step** (Sentence Transformers) followed by **per-cluster grounded extraction** (Gemma) completely solved the issue.
+   - *Correction*: Splitting the pipeline into a **deterministic clustering step** followed by **per-cluster grounded extraction** completely solved the issue.
 
 2. **Full-Spectrum Classification (Surfacing 10+ items)**:
    - *Attempt*: Showing the user every clustered category with priority tags.
@@ -213,8 +193,8 @@ During development, two initial approaches failed before reaching the current ar
 
 ## 🏁 Prize Categories Targeted
 
-- **Overall Winner ($250)**: Epitomizes the **"Slow and Steady"** theme by creating an AI that reduces noise, promotes human calm, automates tedious inbox triage, and enforces safe human agency.
-- **Best Use of Gemma ($200)**: Leverages Gemma's compact open weights for fast, grounded, local-first reasoning with zero cloud privacy leaks.
+- **Overall Winner ($250)**: Epitomizes the **"Slow and Steady"** theme by creating an open-source AI assistant that reduces noise, promotes human calm, automates tedious inbox triage, and enforces safe human agency.
+- **DEV Completion Badge**: Awarded to all valid, reproducible open-source AI projects meeting the challenge requirements.
 
 ---
 

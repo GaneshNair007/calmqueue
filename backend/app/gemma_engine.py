@@ -1,4 +1,9 @@
-"""Gemma open-weight task extractor and priority engine for CalmQueue."""
+"""Task extractor and priority engine for CalmQueue.
+
+Supports dual-mode operation:
+1. Live local inference via Ollama (e.g. gemma2:2b or other open-weight models).
+2. Deterministic grounded NLP extraction fallback when local LLM daemon is offline.
+"""
 
 from __future__ import annotations
 
@@ -8,56 +13,69 @@ import logging
 from typing import List, Dict, Optional, Tuple, Any
 from .models import NotificationItem, ClusterGroup, PriorityAction
 
-logger = logging.getLogger("calmqueue.gemma")
+logger = logging.getLogger("calmqueue.engine")
 
-# Regex heuristics for deterministic extraction and grounding
+# Priority and urgency patterns based on engineering terminology
 URGENT_P0_PATTERNS = [
-    r"critical", r"rce", r"cve-\d+", r"vulnerability", r"oomkilled", r"out of memory",
-    r"latency spiked", r"failover", r"incident #\d+", r"down in prod", r"high severity",
-    r"p99 latency", r"slo threshold"
+    r"\bcritical\b", r"\brce\b", r"\bcve-\d+\b", r"\bvulnerability\b", r"\boomkilled\b",
+    r"\bout of memory\b", r"\blatency spiked\b", r"\bfailover\b", r"\bincident #\d+\b",
+    r"\bdown in prod\b", r"\bhigh severity\b", r"\bp99 latency\b", r"\bslo threshold\b",
+    r"\bdata loss\b", r"\boutage\b", r"\bsecurity advisory\b"
 ]
 
 URGENT_P1_PATTERNS = [
-    r"hard cutoff", r"sign off", r"approval needed", r"cannot deploy without",
-    r"rotate.*password", r"secret rotation", r"due today", r"before \d+:\d+",
-    r"speaker confirmation deadline", r"ready for.*merge"
+    r"\bhard cutoff\b", r"\bsign[- ]off\b", r"\bapproval needed\b", r"\bcannot deploy without\b",
+    r"\brotate.*(?:password|secret|credential)\b", r"\bdue today\b", r"\bbefore \d{1,2}:\d{2}\b",
+    r"\bdeadline is\b", r"\bready for.*merge\b", r"\baction required\b", r"\bblocker\b"
 ]
 
 DEADLINE_EXPLICIT_PATTERNS = [
-    (r"(before|by|cutoff is)\s+(\d{1,2}:\d{2}\s*(?:am|pm|ist|utc)?)", "confirmed"),
-    (r"(due today\s*(?:at\s*)?\d{1,2}:\d{2}\s*(?:am|pm|ist|utc)?)", "confirmed"),
-    (r"(deadline (?:is )?[a-z]+ \d{1,2}(?:st|nd|rd|th)?)", "confirmed"),
-    (r"due by ([a-z]+ \d{1,2})", "confirmed"),
-    (r"(by end of week)", "inferred"),
-    (r"(in \d+ days)", "inferred"),
-    (r"(tomorrow)", "inferred"),
+    (r"(?:before|by|cutoff is)\s+(\d{1,2}:\d{2}\s*(?:am|pm|ist|utc)?)", "confirmed"),
+    (r"(?:due today\s*(?:at\s*)?\d{1,2}:\d{2}\s*(?:am|pm|ist|utc)?)", "confirmed"),
+    (r"(?:deadline (?:is )?[a-z]+ \d{1,2}(?:st|nd|rd|th)?)", "confirmed"),
+    (r"(?:due by [a-z]+ \d{1,2})", "confirmed"),
+    (r"(?:by end of week)", "inferred"),
+    (r"(?:in \d+ days)", "inferred"),
+    (r"(?:tomorrow\b)", "inferred"),
+    (r"(?:whenever you have time|when you get a chance|no rush)", "inferred"),
 ]
 
 
 class GemmaEngine:
-    """Orchestrates Gemma inference (local Ollama or embedded open-weight pipeline)."""
+    """Orchestrates priority extraction and action synthesis.
+    
+    Dynamically connects to Ollama if available, or uses a deterministic
+    grounded NLP extraction pipeline as a reliable local fallback.
+    """
 
     def __init__(self, ollama_host: str = "http://127.0.0.1:11434", model_name: str = "gemma2:2b"):
         self.ollama_host = ollama_host
         self.model_name = model_name
-        self.active_runtime = "embedded-gemma-pipeline"
+        self.active_runtime = "deterministic-nlp-pipeline"
         self._check_ollama()
 
     def _check_ollama(self) -> bool:
-        """Check if local Ollama daemon with Gemma is accessible."""
+        """Check if local Ollama daemon with a supported model is accessible."""
         try:
             import urllib.request
             req = urllib.request.Request(f"{self.ollama_host}/api/tags", headers={"User-Agent": "CalmQueue"})
             with urllib.request.urlopen(req, timeout=1.0) as resp:
                 data = json.loads(resp.read().decode())
                 models = [m.get("name", "") for m in data.get("models", [])]
-                if any("gemma" in m for m in models):
-                    self.active_runtime = "ollama-gemma2:2b"
-                    logger.info("Connected to local Ollama with Gemma model.")
+                for m in models:
+                    if "gemma" in m:
+                        self.model_name = m
+                        self.active_runtime = f"ollama-{m}"
+                        logger.info("Connected to local Ollama with model: %s", m)
+                        return True
+                if models:
+                    self.model_name = models[0]
+                    self.active_runtime = f"ollama-{models[0]}"
+                    logger.info("Connected to local Ollama with fallback model: %s", models[0])
                     return True
         except Exception:
             pass
-        self.active_runtime = "embedded-gemma-pipeline"
+        self.active_runtime = "deterministic-nlp-pipeline"
         return False
 
     def extract_priorities(
@@ -65,7 +83,7 @@ class GemmaEngine:
         clusters: List[ClusterGroup],
         raw_items_map: Dict[str, NotificationItem]
     ) -> Tuple[List[PriorityAction], str]:
-        """Analyzes clusters to extract top-3 priority actions with evidence grounding."""
+        """Analyzes clusters to extract top-3 priority actions with grounded evidence."""
         scored_candidates: List[Tuple[float, PriorityAction]] = []
 
         for cluster in clusters:
@@ -101,11 +119,11 @@ class GemmaEngine:
         items: List[NotificationItem],
         combined_text: str
     ) -> Tuple[float, Optional[PriorityAction]]:
-        """Extracts task attributes and scores importance."""
+        """Extracts task attributes and scores importance dynamically."""
         canonical = items[0]
         text_lower = combined_text.lower()
 
-        # 1. Detect Urgency Tier
+        # 1. Detect Urgency Tier dynamically
         urgency = "P2"
         urgency_score = 10.0
         for pat in URGENT_P0_PATTERNS:
@@ -122,7 +140,7 @@ class GemmaEngine:
                     break
 
         # Check if already mitigated or resolved
-        if re.search(r"incident.*resolved|mitigated|all good now", text_lower):
+        if re.search(r"\b(?:incident.*resolved|mitigated|all good now|fixed in master)\b", text_lower):
             urgency_score -= 25.0
             if urgency_score < 10.0:
                 urgency_score = 5.0
@@ -145,20 +163,19 @@ class GemmaEngine:
             for s in sentences:
                 s_clean = s.strip()
                 if len(s_clean) > 15:
-                    if any(w in s_clean.lower() for w in ["urgent", "deadline", "cve", "before", "due", "sign off", "error", "must", "cutoff"]):
+                    if any(w in s_clean.lower() for w in ["urgent", "deadline", "cve", "before", "due", "sign off", "error", "must", "cutoff", "broken", "critical"]):
                         if s_clean not in evidence:
                             evidence.append(s_clean)
         if not evidence:
             evidence.append(canonical.body[:120].strip() + "...")
 
-        # 4. Generate Action Draft & Category
-        action_type, action_title, draft_text = self._synthesize_draft(canonical, items, urgency, deadline_str)
+        # 4. Generate Action Title & Draft dynamically (no hardcoded sample strings)
+        action_type, action_title, draft_text = self._synthesize_draft_dynamic(canonical, items, urgency, deadline_str)
 
         # 5. Composite Score Calculation
-        # Urgency + Volume of duplicate pings + Confirmed deadline bonus
         composite_score = (
             urgency_score
-            + (len(items) * 4.0)  # High noise / multiple duplicate follow-ups increases urgency
+            + (len(items) * 4.0)  # Multi-platform repetition increases priority
             + (15.0 if deadline_confidence == "confirmed" else 5.0 if deadline_confidence == "inferred" else 0.0)
         )
 
@@ -181,74 +198,56 @@ class GemmaEngine:
 
         return composite_score, priority_action
 
-    def _synthesize_draft(
+    def _synthesize_draft_dynamic(
         self,
         canonical: NotificationItem,
         items: List[NotificationItem],
         urgency: str,
         deadline: Optional[str]
     ) -> Tuple[str, str, str]:
-        """Synthesizes human-governed draft response or execution step."""
-        title_lower = canonical.title.lower()
-        body_lower = canonical.body.lower()
+        """Dynamically synthesizes action title and response draft from message contents."""
+        title = canonical.title.strip()
+        body = canonical.body.strip()
+        sender = canonical.sender.strip() if canonical.sender else "the sender"
+        sender_first = sender.split()[0].replace("@", "") if sender else "team"
 
-        # Schema Sign-off / Code Review
-        if "schema" in title_lower or "eng-1082" in title_lower or "sign-off" in title_lower:
-            title = "Sign off on v2 User Profiles Schema Migration"
+        # Clean title of common prefixes like [ALERT], Fwd:, Re:, etc.
+        clean_title = re.sub(r"^(\[.*?\]|Re:\s*|Fwd:\s*)+", "", title).strip()
+
+        # Determine action type and formulate action title
+        text_full = f"{clean_title} {body}".lower()
+
+        if any(w in text_full for w in ["sign-off", "sign off", "approve", "review pr", "review pull request", "look at pr"]):
+            action_type = "approve"
+            verb = "Review and Sign Off on"
+        elif any(w in text_full for w in ["cve", "vulnerability", "patch", "security", "rotate", "secret"]):
+            action_type = "schedule"
+            verb = "Deploy Security Patch for"
+        elif any(w in text_full for w in ["down", "failed", "oomkilled", "error", "outage", "spike"]):
+            action_type = "schedule"
+            verb = "Investigate Incident:"
+        else:
+            action_type = "reply"
+            verb = "Follow up on"
+
+        action_title = f"{verb} {clean_title[:50]}"
+
+        # Synthesize personalized draft response
+        deadline_note = f" before {deadline}" if deadline else ""
+        if action_type == "approve":
             draft = (
-                "Hi Jordan, I have reviewed the backwards-compatibility test suite for ENG-1082. "
-                "The migrations preserve zero-downtime compatibility. You have my sign-off to proceed with the 2:00 PM deployment."
+                f"Hi {sender_first}, I have reviewed {clean_title}. "
+                f"The changes look solid and backwards-compatible. You have my approval to proceed{deadline_note}."
             )
-            return "approve", title, draft
-
-        # Critical Security Advisory / CVE
-        if "cve" in title_lower or "yaml" in title_lower or "security" in title_lower:
-            title = "Apply & Verify Emergency Security Dependency Patch"
+        elif action_type == "schedule":
             draft = (
-                "Acknowledged receipt of advisory. Upgrading dependencies to secure patch release and deploying verification build to staging. "
-                "Thank you for the prompt disclosure."
+                f"Acknowledging priority update on '{clean_title}'. "
+                f"Investigating root cause and deploying verified remediation to environment{deadline_note}."
             )
-            return "schedule", title, draft
-
-        # Secret / Password Rotation
-        if "rotate" in title_lower or "secret rotation" in title_lower or "password" in title_lower:
-            title = "Rotate Staging Database Credentials in SSM"
+        else:
             draft = (
-                "Command to execute:\n"
-                "aws ssm put-parameter --name '/staging/db/password' --value '$(openssl rand -hex 24)' --type 'SecureString' --overwrite\n"
-                "kubectl rollout restart deployment/staging-api"
+                f"Hi {sender_first}, regarding '{clean_title}': "
+                f"I am actively tracking this and will provide the requested update{deadline_note}. Thanks for the ping!"
             )
-            return "schedule", title, draft
 
-        # WebSocket / Memory Leak PR Review
-        if "websocket" in title_lower or "pr #812" in title_lower:
-            title = "Merge PR #812 (WebSocket Connection Leak Fix)"
-            draft = (
-                "PR #812 looks excellent. The weakref callback and cleanup ensure socket objects are properly garbage collected. "
-                "Approving and merging now. Thank you for the contribution!"
-            )
-            return "approve", title, draft
-
-        # Production Incident / Latency
-        if "latency" in title_lower or "incident" in title_lower:
-            title = "Verify Auth Gateway DB Connection Pool Scaling"
-            draft = (
-                "Confirmed mitigation: p99 latency returned to 180ms after connection pool expansion. "
-                "I will prepare the incident postmortem timeline for tomorrow's review meeting."
-            )
-            return "reply", title, draft
-
-        # Speaker Invitation
-        if "speaker" in title_lower or "summit" in title_lower:
-            title = "Confirm Speaking Acceptance for OSS Summit"
-            draft = (
-                "Hi there, I'd be honored to present at Open Source Summit 2026! "
-                "Talk title: 'Slow and Steady: Building Resilient On-Device AI Agents with Gemma'. "
-                "Confirming my attendance for October 28."
-            )
-            return "reply", title, draft
-
-        # Generic Fallback
-        title = f"Resolve {canonical.title[:45]}"
-        draft = f"Reviewing details from {canonical.sender}: {canonical.body[:120]}. Proceeding with requested follow-up."
-        return "reply", title, draft
+        return action_type, action_title, draft

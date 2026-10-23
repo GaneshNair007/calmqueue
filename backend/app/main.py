@@ -142,13 +142,14 @@ async def process_inbox(req: ProcessInboxRequest):
     save_actions(top_actions)
 
     latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
-    noise_reduction_pct = round(((raw_count - len(top_actions)) / raw_count) * 100, 1)
+    volume_reduction_pct = round(((raw_count - len(top_actions)) / raw_count) * 100, 1)
 
     return QueueResponse(
         total_raw=raw_count,
         unique_clusters=unique_clusters_count,
         duplicates_filtered=duplicates_filtered,
-        noise_reduction_pct=noise_reduction_pct,
+        volume_reduction_pct=volume_reduction_pct,
+        noise_reduction_pct=volume_reduction_pct,
         top_actions=top_actions,
         all_clusters=clusters,
         execution_latency_ms=latency_ms,
@@ -211,6 +212,7 @@ async def run_all_benchmarks():
                 raw_message_count=len(raw_items),
                 duplicate_clusters_found=duplicate_clusters,
                 noise_items_filtered=noise_filtered,
+                volume_reduction_pct=reduction_pct,
                 cognitive_load_reduction_pct=reduction_pct,
                 priority_action_count=len(top_actions),
                 confirmed_deadlines_count=confirmed_deadlines,
