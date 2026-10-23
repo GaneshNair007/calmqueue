@@ -29,7 +29,7 @@ def evaluate_dataset(file_path: Path):
 
     items_map = {it.id: it for it in raw_items}
     clusters = cluster_engine.cluster_notifications(raw_items)
-    top_actions, model = gemma_engine.extract_priorities(clusters, items_map)
+    top_actions, model, llm_latency = gemma_engine.extract_priorities(clusters, items_map)
 
     elapsed_ms = (time.perf_counter() - start_time) * 1000
     current_mem, peak_mem = tracemalloc.get_traced_memory()

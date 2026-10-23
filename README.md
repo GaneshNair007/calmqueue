@@ -3,14 +3,17 @@
 > **"Your notifications have a lot to say. You shouldn't have to read all of them."**
 
 [![Hacktoberfest 2026](https://img.shields.io/badge/Hacktoberfest-2026%20Week%203%20Entry-blueviolet.svg)](https://dev.to/challenges/hacktoberfest-week3-2026-10-19)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen.svg)](https://ganeshnair007.github.io/calmqueue/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 [![React 19](https://img.shields.io/badge/Frontend-React%2019%20%2B%20TypeScript-61dafb.svg)](https://react.dev/)
 [![Open Source AI](https://img.shields.io/badge/AI-Open%20Source%20NLP%20%2B%20Ollama%20Bridge-brightgreen.svg)](https://github.com/GaneshNair007/calmqueue)
-[![Tests Passing](https://img.shields.io/badge/Tests-9%20Passing-brightgreen.svg)](backend/tests/)
+[![Tests Passing](https://img.shields.io/badge/Tests-11%20Passing-brightgreen.svg)](backend/tests/)
 
 **CalmQueue** is a local-first open-source AI notification assistant built for the **Hacktoberfest Open-Source AI Challenge: Week 3 ("Slow and Steady")**, hosted by DEV Community & Major League Hacking (MLH).
+
+👉 **Try the Live Interactive Web Demo:** [https://ganeshnair007.github.io/calmqueue/](https://ganeshnair007.github.io/calmqueue/)
 
 ---
 
@@ -71,8 +74,8 @@ graph TD
    - Flags automated bot chatter and routine newsletters as filtered noise.
 
 2. **Transparent Dual-Mode Task Engine (`backend/app/gemma_engine.py`)**:
-   - **Local LLM Bridge**: When [Ollama](https://ollama.com/) is running locally, CalmQueue connects to your local open-weight model (`gemma2:2b`, `qwen`, or `llama3`) and reports `active_runtime: ollama-<model>`.
-   - **Deterministic NLP Grounded Pipeline**: When no local LLM daemon is running, CalmQueue executes a deterministic, zero-hallucination NLP extraction pipeline that extracts imperatives, confirmed vs. inferred deadlines, and grounds every action in verifiable quote snippets.
+   - **Local LLM Bridge (`/api/chat`)**: When [Ollama](https://ollama.com/) is running locally, CalmQueue connects to your local model (`gemma2:2b`, `qwen`, or `llama3`) using structured JSON schema output and substring quote validation. Records true model inference latency (`model_inference_latency_ms`).
+   - **Deterministic NLP Grounded Pipeline**: When no local LLM daemon is running, CalmQueue executes a transparent rule-based NLP extraction pipeline, explicitly tagging output as `generation_method='rule-based-fallback'`.
    - Dissects each cluster into:
      - Clear, actionable title.
      - Urgency tier (`P0 Critical`, `P1 High`, `P2 Moderate`).
@@ -84,7 +87,7 @@ graph TD
 
 4. **Human-in-the-Loop Safeguard (`backend/app/database.py`)**:
    - CalmQueue **never** sends automated emails or modifies external systems silently.
-   - Users review generated response drafts in a distraction-free modal and click **"Approve & Copy"**, which records an immutable timestamped event in local SQLite (`approvals_audit`).
+   - Users review generated response drafts in a distraction-free modal and click **"Approve & Copy"**, which records a timestamped event in local SQLite (`approvals_audit`).
 
 ---
 
@@ -94,11 +97,11 @@ We evaluated CalmQueue across three authentic synthetic workloads using `benchma
 
 *(Note: "Displayed Volume Reduction Rate" measures the reduction in surfaced items requiring human review across synthetic test scenarios, from N input messages to exactly 3 priority actions.)*
 
-| Benchmark Dataset | Raw Messages | Duplicate Clusters | Noise Filtered | Top Actions Surfaced | Displayed Volume Reduction | Processing Latency |
-|:-------------------|:------------:|:------------------:|:--------------:|:--------------------:|:--------------------------:|:-----------------:|
-| **Chaotic Monday Morning** | 28 | 3 | 4 | **3** | **89.3%** | ~55 ms |
-| **DevOps Alert Storm** | 22 | 4 | 1 | **3** | **86.4%** | ~18 ms |
-| **Maintainer Backlog** | 35 | 5 | 6 | **3** | **91.4%** | ~45 ms |
+| Benchmark Dataset | Raw Messages | Duplicate Clusters | Noise Filtered | Top Actions Surfaced | Displayed Volume Reduction | Processing Latency | Active Engine |
+|:-------------------|:------------:|:------------------:|:--------------:|:--------------------:|:--------------------------:|:-----------------:|:-------------:|
+| **Chaotic Monday Morning** | 28 | 3 | 4 | **3** | **89.3%** | ~55 ms | `rule-based-fallback` |
+| **DevOps Alert Storm** | 22 | 4 | 1 | **3** | **86.4%** | ~18 ms | `rule-based-fallback` |
+| **Maintainer Backlog** | 35 | 5 | 6 | **3** | **91.4%** | ~45 ms | `rule-based-fallback` |
 
 > Average clutter volume reduction across all synthetic workloads: **89.03%**.
 
@@ -135,13 +138,15 @@ python3 run.py
 
 Open your browser to: **`http://localhost:8000`**
 
+Or test the zero-install live demo: **`https://ganeshnair007.github.io/calmqueue/`**
+
 The unified FastAPI server serves both the REST API and the compiled React dashboard directly.
 
 ---
 
 ## 🧪 Running Automated Tests
 
-Run the full pytest suite (covering semantic clustering, API endpoints, and human safeguard approval state):
+Run the full pytest suite (covering semantic clustering, API endpoints, deterministic extraction, and mock Ollama `/api/chat` inference):
 
 ```bash
 pytest
@@ -149,9 +154,9 @@ pytest
 
 Output:
 ```
-backend/tests/test_api.py .....                                          [ 55%]
+backend/tests/test_api.py .......                                        [ 63%]
 backend/tests/test_clustering.py ....                                    [100%]
-============================== 9 passed in 2.58s ==============================
+============================== 11 passed in 2.65s ==============================
 ```
 
 To run the standalone benchmark evaluation runner:

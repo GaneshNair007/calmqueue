@@ -35,6 +35,8 @@ export interface PriorityAction {
   action_draft: string;
   approved: boolean;
   approved_at?: string | null;
+  generation_method?: string;
+  model_inference_latency_ms?: number;
 }
 
 export interface QueueResponse {
@@ -46,6 +48,7 @@ export interface QueueResponse {
   top_actions: PriorityAction[];
   all_clusters: ClusterGroup[];
   execution_latency_ms: number;
+  llm_inference_latency_ms?: number;
   model_used: string;
   dataset_name: string;
 }

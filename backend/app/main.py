@@ -135,8 +135,8 @@ async def process_inbox(req: ProcessInboxRequest):
     unique_clusters_count = len(clusters)
     duplicates_filtered = sum(c.count - 1 for c in clusters)
 
-    # 2. Gemma Priority Extraction & Grounding
-    top_actions, model_name = gemma_engine.extract_priorities(clusters, items_map)
+    # 2. Priority Extraction & Evidence Grounding
+    top_actions, model_name, llm_latency = gemma_engine.extract_priorities(clusters, items_map)
 
     # 3. Save Active Queue in SQLite
     save_actions(top_actions)
@@ -154,6 +154,7 @@ async def process_inbox(req: ProcessInboxRequest):
         all_clusters=clusters,
         execution_latency_ms=latency_ms,
         model_used=model_name,
+        llm_inference_latency_ms=llm_latency,
         dataset_name=req.dataset_name,
     )
 
@@ -196,7 +197,7 @@ async def run_all_benchmarks():
         start = time.perf_counter()
         items_map = {it.id: it for it in raw_items}
         clusters = cluster_engine.cluster_notifications(raw_items)
-        top_actions, model = gemma_engine.extract_priorities(clusters, items_map)
+        top_actions, model, _ = gemma_engine.extract_priorities(clusters, items_map)
         latency_ms = round((time.perf_counter() - start) * 1000, 2)
 
         duplicate_clusters = sum(1 for c in clusters if c.count > 1)

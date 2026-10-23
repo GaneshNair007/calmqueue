@@ -17,17 +17,19 @@ import type {
   PresetInfo,
   BenchmarkMetrics,
 } from './types';
+import { EMBEDDED_PRESETS_LIST, EMBEDDED_DATASETS, EMBEDDED_BENCHMARKS } from './embeddedPresets';
+import { runClientSideTriage } from './clientTriage';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'queue' | 'clusters' | 'benchmarks'>('queue');
-  const [presets, setPresets] = useState<PresetInfo[]>([]);
+  const [presets, setPresets] = useState<PresetInfo[]>(EMBEDDED_PRESETS_LIST);
   const [selectedPreset, setSelectedPreset] = useState<string>('chaotic_monday');
   const [queueData, setQueueData] = useState<QueueResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   // Benchmarks state
-  const [benchmarks, setBenchmarks] = useState<BenchmarkMetrics[]>([]);
+  const [benchmarks, setBenchmarks] = useState<BenchmarkMetrics[]>(EMBEDDED_BENCHMARKS);
   const [benchmarksLoading, setBenchmarksLoading] = useState<boolean>(false);
 
   // Editable drafts
@@ -65,9 +67,11 @@ export function App() {
       if (res.ok) {
         const data = await res.json();
         setPresets(data);
+      } else {
+        setPresets(EMBEDDED_PRESETS_LIST);
       }
-    } catch (err) {
-      console.error('Failed to load presets:', err);
+    } catch {
+      setPresets(EMBEDDED_PRESETS_LIST);
     }
   };
 
@@ -76,8 +80,12 @@ export function App() {
     setError(null);
     try {
       const pRes = await fetch(`/api/presets/${presetId}`);
-      if (!pRes.ok) throw new Error('Failed to load preset dataset');
-      const items: NotificationItem[] = await pRes.json();
+      let items: NotificationItem[];
+      if (pRes.ok) {
+        items = await pRes.json();
+      } else {
+        items = EMBEDDED_DATASETS[presetId] || EMBEDDED_DATASETS.chaotic_monday;
+      }
 
       const processRes = await fetch('/api/inbox/process', {
         method: 'POST',
@@ -87,8 +95,14 @@ export function App() {
           items,
         }),
       });
-      if (!processRes.ok) throw new Error('Processing failed');
-      const qRes: QueueResponse = await processRes.json();
+
+      let qRes: QueueResponse;
+      if (processRes.ok) {
+        qRes = await processRes.json();
+      } else {
+        qRes = runClientSideTriage(presetId, items);
+      }
+
       setQueueData(qRes);
 
       // Initialize drafts
@@ -97,8 +111,16 @@ export function App() {
         initialDrafts[act.id] = act.action_draft;
       });
       setDrafts(initialDrafts);
-    } catch (err: any) {
-      setError(err.message || 'Error processing notifications');
+    } catch {
+      // Offline / standalone fallback
+      const items = EMBEDDED_DATASETS[presetId] || EMBEDDED_DATASETS.chaotic_monday;
+      const qRes = runClientSideTriage(presetId, items);
+      setQueueData(qRes);
+      const initialDrafts: Record<string, string> = {};
+      qRes.top_actions.forEach((act) => {
+        initialDrafts[act.id] = act.action_draft;
+      });
+      setDrafts(initialDrafts);
     } finally {
       setLoading(false);
     }
@@ -111,9 +133,11 @@ export function App() {
       if (res.ok) {
         const data = await res.json();
         setBenchmarks(data);
+      } else {
+        setBenchmarks(EMBEDDED_BENCHMARKS);
       }
-    } catch (err) {
-      console.error('Failed to load benchmarks:', err);
+    } catch {
+      setBenchmarks(EMBEDDED_BENCHMARKS);
     } finally {
       setBenchmarksLoading(false);
     }
@@ -255,27 +279,27 @@ export function App() {
         </div>
       </section>
 
-      {/* Cognitive Load Reduction Metric Ribbon */}
+      {/* Volume Reduction Metric Ribbon */}
       {queueData && (
         <section className="metrics-ribbon">
           <div className="metric-card">
-            <div className="metric-label">Raw Influx Clutter</div>
+            <div className="metric-label">Raw Influx Volume</div>
             <div className="metric-value">{queueData.total_raw} msgs</div>
           </div>
           <div className="metric-card">
             <div className="metric-label">Duplicates & Noise Filtered</div>
             <div className="metric-value">
-              {queueData.duplicates_filtered} duplicates
+              {queueData.duplicates_filtered} items
             </div>
           </div>
           <div className="metric-card">
-            <div className="metric-label">Review Clutter Reduction</div>
+            <div className="metric-label">Displayed Volume Reduction</div>
             <div className="metric-value metric-highlight">
-              {queueData.noise_reduction_pct}%
+              {queueData.volume_reduction_pct ?? queueData.noise_reduction_pct}%
             </div>
           </div>
           <div className="metric-card">
-            <div className="metric-label">Local Gemma Latency</div>
+            <div className="metric-label">Processing Latency</div>
             <div className="metric-value">
               {queueData.execution_latency_ms} ms
             </div>
@@ -287,7 +311,7 @@ export function App() {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14 }}>
-            🦥 Clustering semantics and extracting priorities with Gemma...
+            🦥 Clustering notifications and extracting grounded priorities...
           </div>
         </div>
       ) : error ? (

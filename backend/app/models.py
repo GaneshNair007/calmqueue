@@ -42,6 +42,8 @@ class PriorityAction(BaseModel):
     action_draft: str
     approved: bool = False
     approved_at: Optional[str] = None
+    generation_method: str = "rule-based-fallback"  # "ollama-llm" or "rule-based-fallback"
+    model_inference_latency_ms: Optional[float] = None
 
 
 class QueueResponse(BaseModel):
@@ -54,6 +56,7 @@ class QueueResponse(BaseModel):
     all_clusters: List[ClusterGroup]
     execution_latency_ms: float
     model_used: str
+    llm_inference_latency_ms: Optional[float] = None
     dataset_name: str
 
 

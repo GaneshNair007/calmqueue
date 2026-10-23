@@ -59,23 +59,24 @@ Instead of an AI that talks more, CalmQueue is an AI that **deliberately shows y
 
 ---
 
-## 🎥 Working Demo & UI Tour
+## 🎥 Live Interactive Web Demo & UI Tour
 
-CalmQueue's user interface is purposefully stark: black typography on pure white space, generous line-heights, zero neon colors, and zero prompt-engineering inputs.
+- **Public Interactive Demo**: [https://ganeshnair007.github.io/calmqueue/](https://ganeshnair007.github.io/calmqueue/)
+- **Zero-Setup Evaluation**: Evaluators and judges can test CalmQueue immediately without installing Node or Python. The public demo runs a client-side triage engine with pre-bundled realistic notification datasets (Chaotic Monday, DevOps Alert Storm, Maintainer Backlog) and supports importing custom JSON payloads directly in the browser.
 
-### 1. The Quiet Dashboard
+### The Quiet Dashboard
 Three cards are shown in order of urgency. Each card displays:
 - **Priority Tier**: `P0 Critical`, `P1 High`, or `P2 Moderate`.
 - **Action Title**: Concise, imperative verb phrase dynamically formulated from the message context.
-- **Deadline Pill**: Color-coded indicator showing whether the deadline is **Confirmed** (green) or **Inferred** (amber).
+- **Deadline Pill**: Indicator distinguishing **Confirmed** deadlines (with specific times) from **Inferred** cues (soft urgency phrases).
 - **Source Platform Badge**: Shows which platforms contributed to this action (e.g., Slack + Jira).
 - **Clustered Message Count**: Number of messages consolidated into this single card.
 
-### 2. Evidence Grounding Drawer
-Clicking **"Inspect Source Evidence"** expands an un-hallucinated evidence drawer showing the exact raw text snippets, timestamps, authors, and channel names that justify the action.
+### Evidence Grounding Drawer
+Clicking **"Inspect Source Evidence"** expands an evidence drawer showing exact verbatim snippets, timestamps, authors, and channel names extracted from the raw messages.
 
-### 3. Human Approval Modal
-Clicking **"Review & Approve Draft"** opens a modal containing a pre-formulated response draft. The user can tweak the response and click **"Approve & Copy"**, which simultaneously copies the response to the clipboard and marks the action approved in `calmqueue.db`.
+### Human Approval Modal
+Clicking **"Review & Approve Draft"** opens an approval modal containing the formulated response draft. The user can review, edit, and click **"Approve & Copy"**, which copies the text to the clipboard and records the approval timestamp in the local audit log.
 
 ---
 
@@ -84,7 +85,8 @@ Clicking **"Review & Approve Draft"** opens a modal containing a pre-formulated 
 All code, benchmark datasets, and documentation are open-source and released under the MIT license:
 
 - **GitHub Repository**: [https://github.com/GaneshNair007/calmqueue](https://github.com/GaneshNair007/calmqueue)
-- **Live Local Quickstart**: Clone and run `python run.py` (takes under 60 seconds).
+- **Live Interactive Demo**: [https://ganeshnair007.github.io/calmqueue/](https://ganeshnair007.github.io/calmqueue/)
+- **Local Quickstart**: Clone and run `python run.py` (takes under 60 seconds).
 
 ---
 
@@ -109,10 +111,10 @@ CalmQueue is engineered as a **local-first** application. Your team's private Sl
                              ▼
  ┌────────────────────────────────────────────────────────┐
  │        2. TASK REASONING & EXTRACTION ENGINE           │
- │   - Transparent Dual-Mode Design                       │
- │   - Local Ollama Bridge (when LLM daemon is running)   │
- │   - Deterministic Grounded NLP Pipeline (offline)      │
- │   - Zero cloud API dependency / 100% offline-ready     │
+ │   - Local Ollama Bridge (/api/chat structured JSON)    │
+ │   - Verbatim Quote Grounding Validation                │
+ │   - Transparent Rule-Based Fallback when LLM offline   │
+ │   - Generation method & latency explicitly recorded    │
  └───────────────────────────┬────────────────────────────┘
                              │ Structured Actions
                              ▼
@@ -120,7 +122,7 @@ CalmQueue is engineered as a **local-first** application. Your team's private Sl
  │           3. EVIDENCE GROUNDING & RANKER               │
  │   - Confirmed vs. Inferred Deadline Extraction         │
  │   - Top-3 Priority Selection (P0 -> P1 -> P2)          │
- │   - Exact Raw Message Quote Mapping                    │
+ │   - Substring verification against raw text            │
  └───────────────────────────┬────────────────────────────┘
                              │
                              ▼
@@ -132,12 +134,16 @@ CalmQueue is engineered as a **local-first** application. Your team's private Sl
  └────────────────────────────────────────────────────────┘
 ```
 
-### The Technology Stack:
-- **Inference & Reasoning**: Dual-mode engine: connects to local **Ollama** when running, and executes a transparent, zero-hallucination deterministic NLP extraction pipeline when offline.
+### The Technology Stack & Inference Engine:
+- **Inference & Reasoning Runtime**:
+  - Connects to local **Ollama** via `/api/chat` passing structured JSON schemas for action synthesis.
+  - **Grounded Quote Validation**: Extracted evidence quotes must match verbatim substrings in the original input text. Unsupported or fabricated statements are stripped.
+  - **Transparent Dual-Mode Fallback**: If the local Ollama daemon is offline or no model is loaded, the pipeline gracefully runs its deterministic rule-based NLP extraction, explicitly tagging every action with `generation_method='rule-based-fallback'` and reporting the active runtime.
+  - **Accurate Latency Tracking**: Records true model inference time (`model_inference_latency_ms`) separately from deterministic execution latency.
 - **Embeddings & Clustering**: TF-IDF vector space modeling with stopword elimination and n-gram similarity scoring.
 - **Backend API**: Python 3.12, **FastAPI**, Pydantic v2, SQLite.
-- **Frontend**: **React 19**, TypeScript, Vite, CSS Design Tokens (Vanilla CSS, no bulky framework dependencies).
-- **Test Suite**: pytest (9/9 automated tests passing).
+- **Frontend**: **React 19**, TypeScript, Vite, CSS Design Tokens (Vanilla CSS, no bulky UI framework dependencies).
+- **Test Suite**: pytest (11/11 automated tests passing, covering API endpoints, deterministic extraction, and mock Ollama `/api/chat` inference with quote grounding).
 
 ---
 
@@ -151,15 +157,17 @@ To adhere to the Hacktoberfest evaluation criteria, I wrote an automated benchma
 
 Here are the real, empirical benchmark results:
 
-| Benchmark Dataset | Raw Messages | Duplicate Clusters Grouped | Noise Items Isolated | Priority Actions Surfaced | Displayed Volume Reduction Rate | Processing Latency | Peak Memory |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Chaotic Monday Morning** | 28 | 3 | 4 | **3** | **89.3%** | ~55 ms | 182.5 KB |
-| **DevOps Alert Storm** | 22 | 4 | 1 | **3** | **86.4%** | ~18 ms | 84.6 KB |
-| **Maintainer Backlog** | 35 | 5 | 6 | **3** | **91.4%** | ~45 ms | 116.0 KB |
+| Benchmark Dataset | Raw Messages | Duplicate Clusters Grouped | Noise Items Isolated | Priority Actions Surfaced | Displayed Volume Reduction Rate | Processing Latency | Peak Memory | Active Engine |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Chaotic Monday Morning** | 28 | 3 | 4 | **3** | **89.3%** | ~55 ms | 182.5 KB | `rule-based-fallback` |
+| **DevOps Alert Storm** | 22 | 4 | 1 | **3** | **86.4%** | ~18 ms | 84.6 KB | `rule-based-fallback` |
+| **Maintainer Backlog** | 35 | 5 | 6 | **3** | **91.4%** | ~45 ms | 116.0 KB | `rule-based-fallback` |
+
+*Note: In the evaluation environment without a running GPU/Ollama instance, benchmarks reflect the deterministic fallback runtime. Full LLM inference latency varies by local hardware (typically 1.2s - 3.5s on 4-bit quantized 2B-7B models).*
 
 ### Key Benchmark Takeaways:
 - **Displayed Volume Reduction: 89.03% average**. By clustering duplicates and isolating noise, CalmQueue reduces the volume of surfaced items from an average of 28.3 down to exactly 3.
-- **Sub-60ms Processing Latency**: The local pipeline executes in milliseconds without waiting on cloud network round-trips.
+- **Sub-60ms Processing Latency** (Fallback Mode): The local deterministic pipeline executes in milliseconds without waiting on cloud network round-trips.
 - **Confirmed vs. Inferred Deadlines**: Explicitly distinguishes hard deadlines (e.g. `"before 2:00 PM"`) from soft cues (e.g. `"when you get a chance"`), avoiding false-urgency panic.
 
 ---
@@ -168,32 +176,29 @@ Here are the real, empirical benchmark results:
 
 A major failure mode of recent "AI Agents" is **unsupervised automation**—bots sending emails, deleting issues, or merging pull requests without human verification.
 
-CalmQueue enforces three non-negotiable architectural safeguards:
+CalmQueue enforces three core architectural safeguards:
 1. **No Silent Side-Effects**: CalmQueue has no outbound webhooks that send emails, post Slack messages, or mutate repositories autonomously.
 2. **Mandatory Human Approval**: Every generated draft must be reviewed, edited if necessary, and approved by the user.
-3. **Immutable Local Audit Log**: When a draft is approved, an immutable record is logged to the local SQLite database (`calmqueue.db`) containing the timestamp, action ID, and user-confirmed text.
+3. **Persistent Local Audit Log**: When a draft is approved, a record is stored in the local SQLite database (`calmqueue.db`) containing the timestamp, action ID, and user-confirmed text.
 
 ---
 
-## 💡 Lessons Learned & Failed Approaches
+## 💡 Lessons Learned & Architectural Trade-offs
 
-During development, two initial approaches failed before reaching the current architecture:
+During development, two key architectural lessons shaped the final design:
 
-1. **Naive Single-Prompt LLM Summarization**:
-   - *Attempt*: Sending all 28 messages directly to an LLM in one large prompt asking for a "summary".
-   - *Result*: The model hallucinated relationships between unrelated messages, missed a critical PagerDuty alert buried in the middle, and generated a wall of bullet points that was almost as long as the original inbox.
-   - *Correction*: Splitting the pipeline into a **deterministic clustering step** followed by **per-cluster grounded extraction** completely solved the issue.
+1. **Single-Prompt LLM Summarization vs. Staged Pipeline**:
+   - Sending an entire 28-message stream into a single prompt often resulted in the model blending distinct alerts together or omitting quiet, high-severity operational tickets.
+   - Decomposing the system into an initial **clustering and noise-filtering stage** followed by **per-cluster action synthesis** produced much more reliable, auditable outputs.
 
-2. **Full-Spectrum Classification (Surfacing 10+ items)**:
-   - *Attempt*: Showing the user every clustered category with priority tags.
-   - *Result*: Users still felt overwhelmed looking at 12 "organized" cards. It defeated the purpose of the "Slow and Steady" theme.
-   - *Correction*: Enforcing a strict, non-negotiable **Rule of 3**. The human brain can realistically execute three major priorities in a workday. Everything else is safely filed under secondary threads.
+2. **The "Rule of Three" for Attention Conservation**:
+   - Displaying 10+ categorized cards still creates cognitive fatigue. Enforcing a strict cap of the top three highest-urgency items forces clarity on what actually requires attention today, while secondary clusters remain accessible on demand.
 
 ---
 
 ## 🏁 Prize Categories Targeted
 
-- **Overall Winner ($250)**: Epitomizes the **"Slow and Steady"** theme by creating an open-source AI assistant that reduces noise, promotes human calm, automates tedious inbox triage, and enforces safe human agency.
+- **Overall Winner ($250)**: Built for the **"Slow and Steady"** theme by creating an open-source AI assistant that reduces noise, promotes human calm, automates tedious inbox triage, and enforces human oversight.
 - **DEV Completion Badge**: Awarded to all valid, reproducible open-source AI projects meeting the challenge requirements.
 
 ---
@@ -208,11 +213,16 @@ cd calmqueue
 # 2. Install requirements
 pip install -r requirements.txt
 
-# 3. Launch CalmQueue
+# 3. (Optional) Run Ollama for local LLM inference
+# ollama run gemma2:2b
+
+# 4. Launch CalmQueue
 python run.py
 ```
 Open **`http://localhost:8000`** in your browser to experience the Quiet Dashboard.
+Or explore the zero-install live demo at: **`https://ganeshnair007.github.io/calmqueue/`**
 
 ---
 
 *Thank you to DEV, Major League Hacking, and the open-source community for organizing Hacktoberfest 2026. Here's to slowing down, triaging less, and building steady!*
+
