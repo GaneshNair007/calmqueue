@@ -183,7 +183,8 @@ The user interface follows Dieter Rams' tenet: *"Less, but better."*
   - **Overall Winner** ($250 + DEV++ + exclusive badge) — Exemplifies the Slow and Steady philosophy through radical subtraction, cognitive calm, and human agency.
   - **DEV Completion Badge** — Valid, reproducible open-source AI project meeting all challenge rules.
 - **Required Submission Tags**: `#devchallenge`, `#hf26challenge`
-- **Submission Article**: [`docs/dev_article_submission.md`](docs/dev_article_submission.md)
+- **Published Submission Article**: [CalmQueue: The Sloth-Speed AI That Turns 28 Daily Notifications Into 3 Quiet Actions](https://dev.to/ganeshnair007/calmqueue-the-sloth-speed-ai-that-turns-28-daily-notifications-into-3-quiet-actions-2b3p)
+- **Local Source Draft**: [`docs/dev_article_submission.md`](docs/dev_article_submission.md)
 
 ---
 
