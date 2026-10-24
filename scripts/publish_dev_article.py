@@ -146,9 +146,14 @@ def publish_to_dev(api_key: str):
         sys.exit(1)
 
 def get_secure_api_key() -> str:
-    """Retrieves DEV API key securely using getpass or a secure native input dialog.
+    """Retrieves DEV API key securely using environment variable or getpass.
     Never accepts credentials via command-line arguments to prevent process-table leaks.
     """
+    # 0. Check secure environment variable
+    env_key = os.environ.get("DEVTO_API_KEY")
+    if env_key and env_key.strip():
+        return env_key.strip()
+
     # 1. Attempt getpass.getpass() in terminal (input is hidden, no echo)
     try:
         import getpass
