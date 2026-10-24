@@ -40,6 +40,8 @@ Triage fatigue is real. Reading, de-duplicating, and prioritizing overlapping al
 - **Live Interactive Web Demo (Zero-Install)**: [https://ganeshnair007.github.io/calmqueue/](https://ganeshnair007.github.io/calmqueue/)
 - Judges and community members can evaluate CalmQueue instantly in their browser with pre-bundled scenarios (*Chaotic Monday Morning*, *DevOps Alert Storm*, *Maintainer Backlog*) or import custom JSON payloads directly.
 
+*Note on Public Demo Architecture*: To ensure instant zero-setup access for competition judges without requiring local Python environments or GPU runtimes, the hosted public GitHub Pages demo runs a lightweight client-side triage engine over static datasets. It does not run Gemma inside the browser. To run local open-weight LLM inference with Ollama (`/api/chat`), clone the repository and run the local backend.
+
 ### UI Walkthrough:
 1. **The Quiet Dashboard**: High-contrast, minimalist interface showing the top 3 priorities, urgency badges (`P0 Critical`, `P1 High`, `P2 Moderate`), and deadline indicators distinguishing confirmed timestamps from inferred cues.
 2. **Evidence Grounding Drawer**: Expanding an item reveals exact verbatim source quotes, timestamps, authors, and channel tags.
@@ -147,7 +149,9 @@ We evaluated CalmQueue across three authentic synthetic workloads using `benchma
 | **DevOps Alert Storm** | 22 | 4 | 1 | **3** | **86.4%** | ~24 ms | `rule-based-fallback` |
 | **Maintainer Backlog** | 35 | 5 | 6 | **3** | **91.4%** | ~44 ms | `rule-based-fallback` |
 
-*Average Displayed Volume Reduction: 89.03% across test workloads.*
+*Note on Metrics & Latency*:
+- **Displayed Volume Reduction Rate**: Measures the mathematical compression of surfaced cards requiring attention (from N input items to 3 priority items). It represents inbox deduplication and automated noise suppression, not clinical human cognitive-load measurement.
+- **Latency Disclosures**: The sub-60ms measurements above capture our optimized deterministic fallback pipeline. When local LLM inference via Ollama is active, inference latency is tracked separately per call via `model_inference_latency_ms` and typically ranges from 1.2s to 3.5s depending on host GPU/CPU hardware.
 
 Instead of sifting through 28 notifications, you review exactly three actionable items, approve the prepared responses in under two minutes, and spend your day doing deep work—or taking it slow like a sloth.
 
