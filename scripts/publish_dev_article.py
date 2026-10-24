@@ -146,20 +146,16 @@ def publish_to_dev(api_key: str):
         sys.exit(1)
 
 def get_secure_api_key() -> str:
-    """Retrieves DEV API key securely using getpass or a secure native input dialog."""
-    # 1. Check environment variable if already populated
-    env_key = os.environ.get("DEVTO_API_KEY")
-    if env_key and env_key.strip():
-        return env_key.strip()
-
-    # 2. Check command line argument if passed
-    if len(sys.argv) > 1 and sys.argv[1].strip():
-        return sys.argv[1].strip()
-
-    # 3. Attempt getpass.getpass() in terminal
+    """Retrieves DEV API key securely using getpass or a secure native input dialog.
+    Never accepts credentials via command-line arguments to prevent process-table leaks.
+    """
+    # 1. Attempt getpass.getpass() in terminal (input is hidden, no echo)
     try:
         import getpass
-        print("Please enter your DEV.to API Key below (input is hidden for security):")
+        print("=" * 60)
+        print("CALMQUEUE - DEV.TO COMPETITION SUBMISSION PUBLISHER")
+        print("=" * 60)
+        print("Please enter your fresh DEV.to API Key below (input is hidden):")
         key = getpass.getpass(prompt="DEV API Key: ")
         if key and key.strip():
             return key.strip()
